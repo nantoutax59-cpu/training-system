@@ -523,7 +523,7 @@
                     <div>
                         <label for="add-course-date" class="block text-xs font-bold text-slate-700 mb-1">上課日期 <span class="text-rose-500">*</span></label>
                         <div class="relative flex items-center gap-1">
-                            <input type="text" id="add-course-date" onchange="syncRocToDate('add-course-date', 'add-course-date-picker')" required placeholder="例如：115/10/15" class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-nttax-700 outline-none">
+                            <input type="text" id="add-course-date" onchange="syncRocToDate('add-course-date', 'add-course-date-picker')" required placeholder="例如：115/9/30" class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-nttax-700 outline-none">
                             <input type="date" id="add-course-date-picker" onchange="syncDateToRoc('add-course-date-picker', 'add-course-date')" class="w-10 h-10 p-1 bg-slate-50 border border-slate-300 rounded-xl cursor-pointer text-xs shrink-0 hover:bg-slate-100 transition" title="點擊開啟日曆選擇日期">
                         </div>
                         <p class="text-[10px] text-slate-400 mt-1"><i class="fa-regular fa-calendar-check mr-0.5"></i>可點右側日曆選取，自動填入民國年</p>
@@ -792,7 +792,7 @@
                     <div>
                         <label for="edit-course-date" class="block text-xs font-bold text-slate-700 mb-1">上課日期 <span class="text-rose-500">*</span></label>
                         <div class="relative flex items-center gap-1">
-                            <input type="text" id="edit-course-date" onchange="syncRocToDate('edit-course-date', 'edit-course-date-picker')" required placeholder="例如：115/10/15" class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-nttax-700 outline-none">
+                            <input type="text" id="edit-course-date" onchange="syncRocToDate('edit-course-date', 'edit-course-date-picker')" required placeholder="例如：115/9/30" class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-nttax-700 outline-none">
                             <input type="date" id="edit-course-date-picker" onchange="syncDateToRoc('edit-course-date-picker', 'edit-course-date')" class="w-10 h-10 p-1 bg-slate-50 border border-slate-300 rounded-xl cursor-pointer text-xs shrink-0 hover:bg-slate-100 transition" title="點擊開啟日曆選擇日期">
                         </div>
                         <p class="text-[10px] text-slate-400 mt-1"><i class="fa-regular fa-calendar-check mr-0.5"></i>可點右側日曆選取，自動填入民國年</p>
@@ -891,6 +891,7 @@
         let activePortal = 'user';
         let isAdminAuthenticated = false;
         let deptChartInstance = null;
+        let pendingDeleteAction = null;
 
         window.onload = function() {
             checkExistingAdminSession();
@@ -912,19 +913,80 @@
             if (banner) banner.classList.add('hidden');
         }
 
-        // 轉換為標準民國年格式 (Y/M/D -> 115/10/15)
+        // 顯示訊息彈窗 Notification (Toast)
+        function showToast(message, type = "info") {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-lg border text-xs font-semibold flex items-center gap-2 transition-all transform translate-y-2 opacity-0 duration-200`;
+
+            if (type === "success") {
+                toast.classList.add('bg-emerald-900', 'text-white', 'border-emerald-700');
+                toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i> <span>${message}</span>`;
+            } else if (type === "error") {
+                toast.classList.add('bg-rose-900', 'text-white', 'border-rose-700');
+                toast.innerHTML = `<i class="fa-solid fa-circle-exclamation text-rose-400 text-sm"></i> <span>${message}</span>`;
+            } else if (type === "warning") {
+                toast.classList.add('bg-amber-900', 'text-white', 'border-amber-700');
+                toast.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400 text-sm"></i> <span>${message}</span>`;
+            } else {
+                toast.classList.add('bg-slate-900', 'text-white', 'border-slate-700');
+                toast.innerHTML = `<i class="fa-solid fa-circle-info text-sky-400 text-sm"></i> <span>${message}</span>`;
+            }
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // 轉換為標準民國年格式 (精確時區解析，防止 ISO 時間跨時區導致少一天)
         function formatRocDate(dateStr) {
             if (!dateStr) return '';
             let s = String(dateStr).trim();
-            if (s.includes('/')) return s; // 若已包含斜線則直接回傳
+
+            // 若包含 ISO 或標準 Date 時間格式，改以 Date 物件精確計算在地時間 (UTC+8)
+            if (s.includes('T') || s.includes('Z') || (s.includes('-') && s.length > 10)) {
+                const d = new Date(s);
+                if (!isNaN(d.getTime())) {
+                    const year = d.getFullYear();
+                    const month = d.getMonth() + 1;
+                    const date = d.getDate();
+                    const rocYear = year > 1900 ? year - 1911 : year;
+                    return `${rocYear}/${month}/${date}`;
+                }
+            }
+
+            // 處理民國年已有格式 115/09/30 或 115/9/30
+            if (s.includes('/')) {
+                const parts = s.split('/');
+                if (parts.length === 3) {
+                    const y = parseInt(parts[0], 10);
+                    const m = parseInt(parts[1], 10);
+                    const d = parseInt(parts[2], 10);
+                    return `${y}/${m}/${d}`;
+                }
+                return s;
+            }
+
+            // 處理純西元日期格式 2026-09-30
             if (s.includes('-')) {
                 const parts = s.split('-');
                 if (parts.length === 3) {
                     const year = parseInt(parts[0], 10);
+                    const month = parseInt(parts[1], 10);
+                    const day = parseInt(parts[2], 10);
                     const rocYear = year > 1900 ? year - 1911 : year;
-                    return `${rocYear}/${parts[1]}/${parts[2]}`;
+                    return `${rocYear}/${month}/${day}`;
                 }
             }
+
             return s;
         }
 
@@ -999,19 +1061,20 @@
             const parts = picker.value.split('-');
             if (parts.length === 3) {
                 const rocYear = parseInt(parts[0], 10) - 1911;
-                const month = parts[1];
-                const day = parts[2];
+                const month = parseInt(parts[1], 10);
+                const day = parseInt(parts[2], 10);
                 text.value = `${rocYear}/${month}/${day}`;
             }
         }
 
-        // 手動輸入民國年轉換連動西元日曆
+        // 手動輸入民國年轉換連動西元日曆 (精確鎖定日期，防止預設時區移位)
         function syncRocToDate(textId, pickerId) {
             const text = document.getElementById(textId);
             const picker = document.getElementById(pickerId);
             if (!text || !picker || !text.value) return;
 
-            const parts = text.value.split('/');
+            const cleanStr = formatRocDate(text.value);
+            const parts = cleanStr.split('/');
             if (parts.length === 3) {
                 const rocYear = parseInt(parts[0], 10);
                 if (!isNaN(rocYear)) {
@@ -1129,6 +1192,269 @@
             }
         }
 
+        function openEditCourseModal(courseId) {
+            const course = courses.find(c => c.id === courseId);
+            if (!course) return;
+
+            document.getElementById('edit-course-id').value = course.id;
+            document.getElementById('edit-course-name').value = course.name;
+            document.getElementById('edit-course-date').value = formatRocDate(course.date);
+            document.getElementById('edit-course-time').value = course.time;
+            document.getElementById('edit-course-location').value = course.location;
+            document.getElementById('edit-course-capacity').value = course.capacity;
+            document.getElementById('edit-course-description').value = course.description || '';
+
+            syncRocToDate('edit-course-date', 'edit-course-date-picker');
+            document.getElementById('edit-course-modal').classList.remove('hidden');
+        }
+
+        function closeEditCourseModal() {
+            document.getElementById('edit-course-modal').classList.add('hidden');
+        }
+
+        // UPDATE Course
+        async function handleEditCourseSubmit(e) {
+            e.preventDefault();
+
+            const courseId = document.getElementById('edit-course-id').value;
+            const name = document.getElementById('edit-course-name').value.trim();
+            const date = formatRocDate(document.getElementById('edit-course-date').value.trim());
+            const time = document.getElementById('edit-course-time').value.trim();
+            const location = document.getElementById('edit-course-location').value.trim();
+            const capacity = parseInt(document.getElementById('edit-course-capacity').value) || 50;
+            const description = document.getElementById('edit-course-description').value.trim();
+
+            const updatedCourse = {
+                id: courseId,
+                name: name,
+                date: date,
+                time: time,
+                location: location,
+                capacity: capacity,
+                description: description
+            };
+
+            closeEditCourseModal();
+
+            const res = await apiCall('updateCourse', updatedCourse);
+            if (res && res.success) {
+                showToast("成功更新課程資訊並同步至 Google 試算表！", "success");
+                await fetchDataFromGAS();
+            } else {
+                showToast("更新雲端課程失敗", "error");
+            }
+        }
+
+        // Toggle Course OPEN / CLOSED status
+        async function toggleCourseStatus(courseId) {
+            const course = courses.find(c => c.id === courseId);
+            if (!course) return;
+
+            const newStatus = course.status === 'OPEN' ? 'CLOSED' : 'OPEN';
+            const res = await apiCall('toggleCourseStatus', { id: courseId, status: newStatus });
+
+            if (res && res.success) {
+                showToast(`已變更課程開放狀態為 [${newStatus === 'OPEN' ? '開放中' : '已關閉'}]`, "success");
+                await fetchDataFromGAS();
+            } else {
+                showToast("更新狀態失敗", "error");
+            }
+        }
+
+        function confirmDeleteCourse(courseId) {
+            const course = courses.find(c => c.id === courseId);
+            if (!course) return;
+
+            document.getElementById('delete-confirm-msg').innerText = `確定要刪除課程「${course.name}」嗎？連同該課程的報名名冊也將一併刪除！`;
+            pendingDeleteAction = async () => {
+                const res = await apiCall('deleteCourse', { id: courseId });
+                if (res && res.success) {
+                    showToast("已刪除該課程及其所有名冊紀錄", "warning");
+                    await fetchDataFromGAS();
+                } else {
+                    showToast("刪除失敗", "error");
+                }
+            };
+            document.getElementById('delete-confirm-modal').classList.remove('hidden');
+        }
+
+        function confirmDeleteRegistration(courseId, regId) {
+            const reg = registrations.find(r => r.courseId === courseId && String(r.id) === String(regId));
+            if (!reg) return;
+
+            document.getElementById('delete-confirm-msg').innerText = `確定要刪除 ${reg.department} ${reg.userName} (${reg.employeeId}) 的參訓報名紀錄嗎？`;
+            pendingDeleteAction = async () => {
+                await deleteRegistration(courseId, regId);
+            };
+            document.getElementById('delete-confirm-modal').classList.remove('hidden');
+        }
+
+        document.getElementById('delete-confirm-btn').onclick = async function() {
+            if (pendingDeleteAction) {
+                const action = pendingDeleteAction;
+                pendingDeleteAction = null;
+                closeDeleteConfirmModal();
+                await action();
+            }
+        };
+
+        function closeDeleteConfirmModal() {
+            document.getElementById('delete-confirm-modal').classList.add('hidden');
+            pendingDeleteAction = null;
+        }
+
+        function renderAdminCoursesTable() {
+            const tbody = document.getElementById('admin-courses-table-body');
+            tbody.innerHTML = '';
+
+            if (courses.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="py-8 text-center text-slate-400 text-sm">目前無任何課程資料</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            courses.forEach(c => {
+                const count = registrations.filter(r => r.courseId === c.id).length;
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/80 transition";
+
+                tr.innerHTML = `
+                    <td class="py-3.5 px-4 font-semibold text-slate-900">${c.name}</td>
+                    <td class="py-3.5 px-4 text-slate-700 font-medium">${formatRocDate(c.date)}</td>
+                    <td class="py-3.5 px-4 text-slate-700 font-medium">${c.time}</td>
+                    <td class="py-3.5 px-4 text-slate-600">${c.location}</td>
+                    <td class="py-3.5 px-4 text-center font-mono">${count} / ${c.capacity}</td>
+                    <td class="py-3.5 px-4 text-center">
+                        <button onclick="toggleCourseStatus('${c.id}')" class="px-2.5 py-1 rounded-full text-xs font-bold transition ${c.status === 'OPEN' ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}">
+                            ${c.status === 'OPEN' ? '開放中' : '已關閉'}
+                        </button>
+                    </td>
+                    <td class="py-3.5 px-4 text-right space-x-1">
+                        <button onclick="openEditCourseModal('${c.id}')" class="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg text-xs font-semibold transition">
+                            <i class="fa-solid fa-pen-to-square"></i> 編輯
+                        </button>
+                        <button onclick="confirmDeleteCourse('${c.id}')" class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg text-xs font-semibold transition">
+                            <i class="fa-solid fa-trash-can"></i> 刪除
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function populateFilterDropdowns() {
+            const filterCourse = document.getElementById('filter-course');
+            const filterDept = document.getElementById('filter-dept');
+
+            if (filterCourse) {
+                const currentVal = filterCourse.value;
+                filterCourse.innerHTML = `<option value="ALL">所有課程 (${courses.length} 門)</option>`;
+                courses.forEach(c => {
+                    filterCourse.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+                });
+                filterCourse.value = currentVal || "ALL";
+            }
+
+            if (filterDept) {
+                const currentVal = filterDept.value;
+                filterDept.innerHTML = `<option value="ALL">所有單位 (12 個科室分局)</option>`;
+                DEPARTMENTS.forEach(d => {
+                    filterDept.innerHTML += `<option value="${d}">${d}</option>`;
+                });
+                filterDept.value = currentVal || "ALL";
+            }
+        }
+
+        function renderAdminRoster() {
+            const tbody = document.getElementById('admin-roster-table-body');
+            tbody.innerHTML = '';
+
+            const selectedCourse = document.getElementById('filter-course')?.value || 'ALL';
+            const selectedDept = document.getElementById('filter-dept')?.value || 'ALL';
+            const query = (document.getElementById('filter-search')?.value || '').trim().toUpperCase();
+
+            const filtered = registrations.filter(r => {
+                const matchCourse = (selectedCourse === 'ALL' || r.courseId === selectedCourse);
+                const matchDept = (selectedDept === 'ALL' || r.department === selectedDept);
+                const matchQuery = !query || (
+                    r.employeeId.toUpperCase().includes(query) ||
+                    r.userName.includes(query) ||
+                    (r.jobTitle && r.jobTitle.includes(query))
+                );
+                return matchCourse && matchDept && matchQuery;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="py-8 text-center text-slate-400 text-sm">查無符合條件之參訓報名資料</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            filtered.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/80 transition text-xs";
+
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-mono font-bold text-slate-700">#${r.id}</td>
+                    <td class="py-3 px-4 font-semibold text-slate-900">${r.courseName}</td>
+                    <td class="py-3 px-4 text-slate-600 font-medium">${formatRocDate(r.courseDate)} ${r.courseTime}</td>
+                    <td class="py-3 px-4"><span class="bg-emerald-50 text-emerald-800 font-semibold px-2 py-0.5 rounded border border-emerald-200">${r.department}</span></td>
+                    <td class="py-3 px-4 font-mono font-bold text-slate-800">${r.employeeId}</td>
+                    <td class="py-3 px-4 text-slate-700">${r.jobTitle || '未填寫'}</td>
+                    <td class="py-3 px-4 font-bold text-slate-900">${r.userName}</td>
+                    <td class="py-3 px-4 text-slate-400 font-mono">${r.timestamp || '--'}</td>
+                    <td class="py-3 px-4 text-center">
+                        <button onclick="toggleCheckIn('${r.courseId}', '${r.id}')" class="px-2.5 py-1 rounded-full font-bold transition ${r.checkedIn ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}">
+                            ${r.checkedIn ? '✓ 已簽到' : '未簽到'}
+                        </button>
+                    </td>
+                    <td class="py-3 px-4 text-right">
+                        <button onclick="confirmDeleteRegistration('${r.courseId}', '${r.id}')" class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded text-xs font-semibold transition">
+                            <i class="fa-solid fa-trash-can"></i> 刪除
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateDashboardStats() {
+            document.getElementById('stat-total-courses').innerText = courses.length;
+            document.getElementById('stat-total-registrations').innerText = registrations.length;
+
+            if (registrations.length === 0) {
+                document.getElementById('stat-checkin-rate').innerText = '0%';
+                document.getElementById('stat-top-dept').innerText = '無資料';
+                return;
+            }
+
+            const checkedCount = registrations.filter(r => r.checkedIn).length;
+            const rate = Math.round((checkedCount / registrations.length) * 100);
+            document.getElementById('stat-checkin-rate').innerText = `${rate}%`;
+
+            const deptMap = {};
+            registrations.forEach(r => {
+                deptMap[r.department] = (deptMap[r.department] || 0) + 1;
+            });
+
+            let topDept = '無資料';
+            let maxCount = 0;
+            Object.keys(deptMap).forEach(d => {
+                if (deptMap[d] > maxCount) {
+                    maxCount = deptMap[d];
+                    topDept = d;
+                }
+            });
+
+            document.getElementById('stat-top-dept').innerText = `${topDept} (${maxCount}次)`;
+        }
+
         function openManualAddModal() {
             if (courses.length === 0) {
                 showToast("目前無可用課程", "warning");
@@ -1144,7 +1470,7 @@
             }
             let csvContent = "\uFEFF報名編號,課程名稱,上課日期,上課時間,單位,員工編號,職稱,姓名,報名時間,簽到狀態\n";
             registrations.forEach(r => {
-                csvContent += `"${r.id}","${r.courseName}","${r.courseDate}","${r.courseTime}","${r.department}","${r.employeeId}","${r.jobTitle || ''}","${r.userName}","${r.timestamp}","${r.checkedIn ? '已簽到' : '未簽到'}"\n`;
+                csvContent += `"${r.id}","${r.courseName}","${formatRocDate(r.courseDate)}","${r.courseTime}","${r.department}","${r.employeeId}","${r.jobTitle || ''}","${r.userName}","${r.timestamp}","${r.checkedIn ? '已簽到' : '未簽到'}"\n`;
             });
 
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -1511,71 +1837,64 @@
             document.getElementById('registration-modal').classList.add('hidden');
         }
 
-        // CREATE Registration
+        // CREATE Registration Submit
         async function handleRegistrationSubmit(e) {
             e.preventDefault();
 
             const courseId = document.getElementById('form-course-id').value;
             const course = courses.find(c => c.id === courseId);
-            const dept = document.getElementById('form-dept').value;
-            const empId = document.getElementById('form-employee-id').value.trim().toUpperCase();
+            if (!course) return;
+
+            const department = document.getElementById('form-dept').value;
+            const employeeId = document.getElementById('form-employee-id').value.trim().toUpperCase();
             const jobTitle = document.getElementById('form-job-title').value.trim();
-            const name = document.getElementById('form-user-name').value.trim();
+            const userName = document.getElementById('form-user-name').value.trim();
 
-            if (!dept || !empId || !jobTitle || !name) {
-                showToast("請填寫所有必填欄位！", "error");
+            if (!department || !employeeId || !userName) {
+                showToast("請填寫所有必要報名欄位！", "error");
                 return;
             }
 
-            const existing = registrations.find(r => r.courseId === courseId && (r.employeeId === empId || r.userName === name));
-            if (existing) {
-                showToast(`員工 ${name} (${empId}) 已報名過本課程！`, "warning");
-                return;
-            }
-
-            const regId = getNextRegistrationId(course.id);
+            const regId = getNextRegistrationId(courseId);
             const now = new Date();
-            const rocYear = now.getFullYear() - 1911;
-            const timeStr = `${rocYear}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getDate().toString().padStart(2,'0')} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+            const timestamp = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-            const newRegistration = {
+            const registrationData = {
                 id: regId,
                 courseId: course.id,
                 courseName: course.name,
                 courseDate: formatRocDate(course.date),
                 courseTime: course.time,
-                department: dept,
-                employeeId: empId,
+                department: department,
+                employeeId: employeeId,
                 jobTitle: jobTitle,
-                userName: name,
-                timestamp: timeStr,
+                userName: userName,
+                timestamp: timestamp,
                 checkedIn: false
             };
 
             closeRegistrationModal();
 
-            const res = await apiCall('addRegistration', newRegistration);
-
+            const res = await apiCall('addRegistration', registrationData);
             if (res && res.success) {
-                confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
-                showToast("報名成功並已同步至雲端試算表！", "success");
-                showSuccessModal(newRegistration);
+                document.getElementById('success-reg-id').innerText = regId;
+                document.getElementById('success-name').innerText = userName;
+                document.getElementById('success-empid').innerText = employeeId;
+                document.getElementById('success-jobtitle').innerText = jobTitle || '未填寫';
+                document.getElementById('success-dept').innerText = department;
+                document.getElementById('success-course').innerText = course.name;
+                document.getElementById('success-datetime').innerText = `${formatRocDate(course.date)} ${course.time}`;
+
+                document.getElementById('success-modal').classList.remove('hidden');
+
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                }
+
                 await fetchDataFromGAS();
             } else {
-                showToast("報名失敗，請稍後再試", "error");
+                showToast("報名資料寫入失敗，請稍後再試", "error");
             }
-        }
-
-        function showSuccessModal(reg) {
-            document.getElementById('success-reg-id').innerText = reg.id;
-            document.getElementById('success-name').innerText = reg.userName;
-            document.getElementById('success-empid').innerText = reg.employeeId;
-            document.getElementById('success-jobtitle').innerText = reg.jobTitle || '未填寫';
-            document.getElementById('success-dept').innerText = reg.department;
-            document.getElementById('success-course').innerText = reg.courseName;
-            document.getElementById('success-datetime').innerText = `${formatRocDate(reg.courseDate)} ${reg.courseTime}`;
-
-            document.getElementById('success-modal').classList.remove('hidden');
         }
 
         function closeSuccessModal() {
@@ -1587,322 +1906,61 @@
             const container = document.getElementById('query-results-container');
 
             if (!query) {
-                showToast("請輸入員工編號或姓名進行查詢", "info");
+                showToast("請輸入員工編號或姓名進行查詢！", "warning");
                 return;
             }
 
-            const matched = registrations.filter(r => 
-                r.employeeId.toUpperCase().includes(query) || 
-                r.userName.includes(query)
+            const results = registrations.filter(r => 
+                r.employeeId.toUpperCase() === query || r.userName.includes(query)
             );
 
-            if (matched.length === 0) {
+            if (results.length === 0) {
                 container.innerHTML = `
-                    <div class="bg-white rounded-2xl p-8 border border-slate-200 text-center text-slate-500">
-                        <i class="fa-solid fa-circle-exclamation text-3xl text-amber-500 mb-2"></i>
-                        <p class="font-bold text-slate-700">查無對應的報名紀錄</p>
+                    <div class="text-center py-12 bg-white rounded-2xl border border-slate-200">
+                        <i class="fa-solid fa-magnifying-glass-minus text-4xl text-slate-300 mb-3 block"></i>
+                        <p class="text-slate-600 font-medium">未找到與「${query}」相符的報名紀錄</p>
+                        <p class="text-slate-400 text-xs mt-1">請確認員工編號或姓名是否正確</p>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = matched.map(r => `
-                <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-nttax-700 transition">
-                    <div class="space-y-1">
-                        <div class="flex items-center space-x-2">
-                            <span class="bg-nttax-100 text-nttax-800 text-xs font-bold px-2.5 py-0.5 rounded-full">${r.department}</span>
-                            <span class="text-xs text-slate-400 font-mono">編號 #${r.id} | ${r.employeeId} (${r.jobTitle || ''}) ${r.userName}</span>
-                            <span class="text-xs px-2 py-0.5 rounded ${r.checkedIn ? 'bg-emerald-100 text-emerald-800 font-bold' : 'bg-slate-100 text-slate-600'}">
-                                ${r.checkedIn ? '✓ 已於現場簽到' : '尚未簽到'}
+            let html = `<div class="space-y-4">`;
+            results.forEach(r => {
+                html += `
+                    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                            <div>
+                                <span class="bg-nttax-100 text-nttax-800 text-xs font-bold px-2.5 py-1 rounded-full border border-nttax-200">${r.department}</span>
+                                <h4 class="text-lg font-bold text-slate-900 mt-2">${r.courseName}</h4>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-xs font-bold ${r.checkedIn ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                                ${r.checkedIn ? '✓ 已完成簽到' : '未簽到'}
                             </span>
                         </div>
-                        <h4 class="text-lg font-bold text-slate-900">${r.courseName}</h4>
-                        <p class="text-xs text-slate-500"><i class="fa-regular fa-clock mr-1"></i>${formatRocDate(r.courseDate)} ${r.courseTime}</p>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                            <div>
+                                <span class="text-slate-400 block">報名人員</span>
+                                <span class="font-bold text-slate-800">${r.userName} (${r.jobTitle || '同仁'})</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block">員工編號</span>
+                                <span class="font-mono font-bold text-slate-800">${r.employeeId}</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block">上課日期</span>
+                                <span class="font-medium text-slate-700">${formatRocDate(r.courseDate)}</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block">上課時間</span>
+                                <span class="font-medium text-slate-700">${r.courseTime}</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex items-center space-x-2 self-end md:self-auto">
-                        <button onclick='showSuccessModal(${JSON.stringify(r)})' class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold transition">
-                            <i class="fa-solid fa-file-circle-check mr-1"></i>檢視報名詳情
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderAdminCoursesTable() {
-            const tbody = document.getElementById('admin-courses-table-body');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
-            if (courses.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-slate-400">目前尚無課程</td></tr>`;
-                return;
-            }
-
-            courses.forEach(c => {
-                const count = registrations.filter(r => r.courseId === c.id).length;
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition";
-
-                tr.innerHTML = `
-                    <td class="py-3.5 px-4 font-bold text-slate-800">${c.name}</td>
-                    <td class="py-3.5 px-4 font-medium text-slate-700">${formatRocDate(c.date)}</td>
-                    <td class="py-3.5 px-4 text-slate-600">${c.time}</td>
-                    <td class="py-3.5 px-4 text-xs text-slate-500">${c.location}</td>
-                    <td class="py-3.5 px-4 text-center font-bold text-slate-700">${count} / ${c.capacity}</td>
-                    <td class="py-3.5 px-4 text-center">
-                        <button onclick="toggleCourseStatus('${c.id}')" title="點擊切換報名狀態" class="px-2.5 py-1 rounded-full text-xs font-bold transition shadow-sm ${c.status === 'OPEN' ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
-                            <i class="fa-solid ${c.status === 'OPEN' ? 'fa-lock-open' : 'fa-lock'} mr-1"></i>${c.status === 'OPEN' ? '開放中' : '已關閉'}
-                        </button>
-                    </td>
-                    <td class="py-3.5 px-4 text-right space-x-1.5">
-                        <button onclick="openEditCourseModal('${c.id}')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-2.5 py-1.5 rounded-lg border border-slate-300 transition inline-flex items-center gap-1">
-                            <i class="fa-solid fa-pen-to-square text-slate-600"></i>
-                            <span>編輯</span>
-                        </button>
-                        <button onclick="deleteCourse('${c.id}')" class="text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold px-2.5 py-1.5 rounded-lg border border-rose-200 transition inline-flex items-center gap-1">
-                            <i class="fa-solid fa-trash text-rose-600"></i>
-                            <span>刪除</span>
-                        </button>
-                    </td>
                 `;
-                tbody.appendChild(tr);
             });
-        }
-
-        // UPDATE Course status
-        async function toggleCourseStatus(courseId) {
-            const res = await apiCall('toggleCourseStatus', { id: courseId });
-            if (res && res.success) {
-                showToast(`已切換課程狀態為：${res.status}`, "info");
-                await fetchDataFromGAS();
-            } else {
-                showToast("狀態切換失敗", "error");
-            }
-        }
-
-        function openEditCourseModal(courseId) {
-            const course = courses.find(c => c.id === courseId);
-            if (!course) return;
-
-            document.getElementById('edit-course-id').value = course.id;
-            document.getElementById('edit-course-name').value = course.name;
-            document.getElementById('edit-course-date').value = formatRocDate(course.date);
-            document.getElementById('edit-course-time').value = course.time;
-            document.getElementById('edit-course-location').value = course.location;
-            document.getElementById('edit-course-capacity').value = course.capacity;
-            document.getElementById('edit-course-description').value = course.description || '';
-
-            syncRocToDate('edit-course-date', 'edit-course-date-picker');
-
-            document.getElementById('edit-course-modal').classList.remove('hidden');
-        }
-
-        function closeEditCourseModal() {
-            document.getElementById('edit-course-modal').classList.add('hidden');
-        }
-
-        // UPDATE Course details
-        async function handleEditCourseSubmit(e) {
-            e.preventDefault();
-            const id = document.getElementById('edit-course-id').value;
-            
-            const updatedCourse = {
-                id: id,
-                name: document.getElementById('edit-course-name').value.trim(),
-                date: formatRocDate(document.getElementById('edit-course-date').value.trim()),
-                time: document.getElementById('edit-course-time').value.trim(),
-                location: document.getElementById('edit-course-location').value.trim(),
-                capacity: parseInt(document.getElementById('edit-course-capacity').value) || 50,
-                description: document.getElementById('edit-course-description').value.trim()
-            };
-
-            closeEditCourseModal();
-
-            const res = await apiCall('updateCourse', updatedCourse);
-            if (res && res.success) {
-                showToast(`課程資料已於雲端試算表更新！`, "success");
-                await fetchDataFromGAS();
-            } else {
-                showToast("更新失敗，請重新嘗試", "error");
-            }
-        }
-
-        // DELETE Course
-        function deleteCourse(courseId) {
-            const course = courses.find(c => c.id === courseId);
-            if (!course) return;
-
-            const enrolledCount = registrations.filter(r => r.courseId === courseId).length;
-            const msgEl = document.getElementById('delete-confirm-msg');
-            const confirmBtn = document.getElementById('delete-confirm-btn');
-
-            if (enrolledCount > 0) {
-                msgEl.innerText = `警告：該課程目前已有 ${enrolledCount} 位學員報名。確定要刪除課程【${course.name}】及其報名紀錄嗎？`;
-            } else {
-                msgEl.innerText = `確定要刪除課程【${course.name}】嗎？刪除後無法復原。`;
-            }
-
-            confirmBtn.onclick = async function() {
-                closeDeleteConfirmModal();
-                const res = await apiCall('deleteCourse', { id: courseId });
-                if (res && res.success) {
-                    showToast(`已自雲端試算表刪除課程【${course.name}】`, "warning");
-                    await fetchDataFromGAS();
-                } else {
-                    showToast("刪除失敗", "error");
-                }
-            };
-
-            document.getElementById('delete-confirm-modal').classList.remove('hidden');
-        }
-
-        function closeDeleteConfirmModal() {
-            document.getElementById('delete-confirm-modal').classList.add('hidden');
-        }
-
-        function populateFilterDropdowns() {
-            const courseSelect = document.getElementById('filter-course');
-            if (courseSelect) {
-                courseSelect.innerHTML = '<option value="ALL">所有課程</option>';
-                courses.forEach(c => {
-                    courseSelect.innerHTML += `<option value="${c.id}">${c.name} (${formatRocDate(c.date)})</option>`;
-                });
-            }
-
-            const deptSelect = document.getElementById('filter-dept');
-            if (deptSelect) {
-                deptSelect.innerHTML = '<option value="ALL">所有單位 (12 個科室分局)</option>';
-                DEPARTMENTS.forEach(d => {
-                    deptSelect.innerHTML += `<option value="${d}">${d}</option>`;
-                });
-            }
-        }
-
-        function renderAdminRoster() {
-            const tbody = document.getElementById('admin-roster-table-body');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
-            const selectedCourse = document.getElementById('filter-course')?.value || "ALL";
-            const selectedDept = document.getElementById('filter-dept')?.value || "ALL";
-            const searchKeyword = (document.getElementById('filter-search')?.value || "").trim().toUpperCase();
-
-            const filtered = registrations.filter(r => {
-                const matchCourse = (selectedCourse === "ALL" || r.courseId === selectedCourse);
-                const matchDept = (selectedDept === "ALL" || r.department === selectedDept);
-                const matchSearch = (!searchKeyword || 
-                    r.employeeId.toUpperCase().includes(searchKeyword) || 
-                    (r.jobTitle && r.jobTitle.toUpperCase().includes(searchKeyword)) ||
-                    r.userName.includes(searchKeyword));
-                return matchCourse && matchDept && matchSearch;
-            });
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-slate-400 font-medium">查無符合條件的報名資料</td></tr>`;
-                return;
-            }
-
-            filtered.forEach(r => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition";
-
-                tr.innerHTML = `
-                    <td class="py-3 px-4 font-mono font-bold text-emerald-700">#${r.id}</td>
-                    <td class="py-3 px-4 font-bold text-slate-800">${r.courseName}</td>
-                    <td class="py-3 px-4 text-xs text-slate-600">${formatRocDate(r.courseDate)} ${r.courseTime}</td>
-                    <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-xs bg-slate-100 font-semibold text-slate-700 border border-slate-200">${r.department}</span></td>
-                    <td class="py-3 px-4 font-mono text-xs font-bold text-slate-700">${r.employeeId}</td>
-                    <td class="py-3 px-4 text-xs font-medium text-slate-700">${r.jobTitle || '-'}</td>
-                    <td class="py-3 px-4 font-medium text-slate-800">${r.userName}</td>
-                    <td class="py-3 px-4 text-xs text-slate-400">${r.timestamp}</td>
-                    <td class="py-3 px-4 text-center">
-                        <button onclick="toggleCheckIn('${r.courseId}', ${r.id})" class="px-2.5 py-1 rounded-full text-xs font-bold transition shadow-sm ${r.checkedIn ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-amber-100 text-amber-800 hover:bg-amber-200'}">
-                            ${r.checkedIn ? '<i class="fa-solid fa-check mr-1"></i>已簽到' : '點擊簽到'}
-                        </button>
-                    </td>
-                    <td class="py-3 px-4 text-right space-x-1">
-                        <button onclick="deleteRegistration('${r.courseId}', ${r.id})" class="text-xs text-rose-600 hover:text-rose-800 font-semibold px-2 py-1 rounded hover:bg-rose-50 transition" title="刪除此紀錄">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function updateDashboardStats() {
-            const elTotalCourses = document.getElementById('stat-total-courses');
-            const elTotalRegs = document.getElementById('stat-total-registrations');
-            const elCheckinRate = document.getElementById('stat-checkin-rate');
-            const elTopDept = document.getElementById('stat-top-dept');
-
-            if (elTotalCourses) elTotalCourses.innerText = courses.length;
-            if (elTotalRegs) elTotalRegs.innerText = registrations.length;
-
-            if (elCheckinRate) {
-                if (registrations.length === 0) {
-                    elCheckinRate.innerText = "0%";
-                } else {
-                    const checkedInCount = registrations.filter(r => r.checkedIn).length;
-                    const rate = Math.round((checkedInCount / registrations.length) * 100);
-                    elCheckinRate.innerText = `${rate}%`;
-                }
-            }
-
-            if (elTopDept) {
-                if (registrations.length === 0) {
-                    elTopDept.innerText = "無資料";
-                } else {
-                    const counts = {};
-                    registrations.forEach(r => {
-                        counts[r.department] = (counts[r.department] || 0) + 1;
-                    });
-                    let topDept = "無資料";
-                    let max = 0;
-                    Object.keys(counts).forEach(d => {
-                        if (counts[d] > max) {
-                            max = counts[d];
-                            topDept = d;
-                        }
-                    });
-                    elTopDept.innerText = topDept;
-                }
-            }
-        }
-
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            if (!container) return;
-
-            const toast = document.createElement('div');
-            toast.className = "pointer-events-auto flex items-center space-x-2 px-4 py-3 rounded-2xl shadow-xl text-xs font-bold transition-all duration-300 transform translate-y-2 opacity-0";
-
-            if (type === 'success') {
-                toast.classList.add('bg-emerald-800', 'text-white');
-                toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-300 text-base"></i><span>${message}</span>`;
-            } else if (type === 'error') {
-                toast.classList.add('bg-rose-800', 'text-white');
-                toast.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-rose-300 text-base"></i><span>${message}</span>`;
-            } else if (type === 'warning') {
-                toast.classList.add('bg-amber-600', 'text-white');
-                toast.innerHTML = `<i class="fa-solid fa-bell text-amber-200 text-base"></i><span>${message}</span>`;
-            } else {
-                toast.classList.add('bg-slate-800', 'text-white');
-                toast.innerHTML = `<i class="fa-solid fa-circle-info text-sky-300 text-base"></i><span>${message}</span>`;
-            }
-
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            }, 10);
-
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => {
-                    if (toast.parentNode) toast.parentNode.removeChild(toast);
-                }, 300);
-            }, 3500);
+            html += `</div>`;
+            container.innerHTML = html;
         }
     </script>
 </body>
