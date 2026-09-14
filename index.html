@@ -130,22 +130,6 @@
             </div>
         </div>
 
-        <!-- System Navigation Tabs -->
-        <div class="flex flex-wrap border-b border-slate-200 gap-2">
-            <button class="px-4 py-2.5 font-bold text-xs rounded-t-xl bg-white border-t border-x border-slate-200 text-nttax-800 flex items-center gap-2">
-                <i class="fa-solid fa-calendar-plus"></i> 課程發布與管理
-            </button>
-            <button class="px-4 py-2.5 font-bold text-xs rounded-t-xl text-slate-500 hover:text-slate-700 flex items-center gap-2">
-                <i class="fa-solid fa-address-book"></i> 報名名冊與簽到管理
-            </button>
-            <button class="px-4 py-2.5 font-bold text-xs rounded-t-xl text-slate-500 hover:text-slate-700 flex items-center gap-2">
-                <i class="fa-solid fa-chart-pie"></i> 單位參與率統計
-            </button>
-            <button class="px-4 py-2.5 font-bold text-xs rounded-t-xl bg-nttax-800 text-white flex items-center gap-2 shadow-sm ml-auto">
-                <i class="fa-file-excel fa-solid"></i> Google 試算表自動同步設定
-            </button>
-        </div>
-
         <!-- Google Apps Script CRUD Settings Card -->
         <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
             <div class="flex items-center gap-3">
@@ -163,7 +147,7 @@
             <div class="space-y-2">
                 <div class="flex justify-between items-center">
                     <label for="gasUrlInput" class="text-xs font-bold text-slate-700">Google Apps Script 網頁應用程式 URL (Web App Endpoint)</label>
-                    <span id="apiStatusBadge" class="bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded-full font-semibold">已連線上 API</span>
+                    <span id="apiStatusBadge" class="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded-full font-semibold">待同步...</span>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-2">
                     <input type="url" id="gasUrlInput" class="flex-1 px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-mono outline-none focus:ring-2 focus:ring-nttax-700" placeholder="https://script.google.com/macros/s/.../exec">
@@ -187,32 +171,34 @@
         </div>
     </footer>
 
-    <!-- JavaScript Diagnostic & Sync Logic -->
+    <!-- JavaScript (使用 JSONP 完美避開 CORS 限制) -->
     <script>
-        // 預設 GAS 網址與 Key
         const STORAGE_KEY_GAS = 'nttax_gas_url';
         
         document.addEventListener('DOMContentLoaded', () => {
             const savedUrl = localStorage.getItem(STORAGE_KEY_GAS);
             if (savedUrl) {
                 document.getElementById('gasUrlInput').value = savedUrl;
+                fetchDataFromGAS(false);
             }
         });
 
-        // 儲存 Webhook URL
         function saveGasWebhookUrl() {
             const url = document.getElementById('gasUrlInput').value.trim();
             if (!url) {
                 alert('請輸入有效的 Google Apps Script URL！');
                 return;
             }
+            if (!url.endsWith('/exec')) {
+                alert('警告：網址結尾必須是 /exec！請確認您複製的是「網頁應用程式 URL」，非編輯器網址。');
+            }
             localStorage.setItem(STORAGE_KEY_GAS, url);
             alert('URL 儲存成功！將嘗試讀取試算表資料...');
             fetchDataFromGAS(true);
         }
 
-        // 從 GAS 擷取資料的核心函數
-        async function fetchDataFromGAS(showNotice = false) {
+        // 使用 Dynamic Script Tag (JSONP 模式) 繞過 CORS 攔截
+        function fetchDataFromGAS(showNotice = false) {
             const gasUrl = document.getElementById('gasUrlInput').value.trim() || localStorage.getItem(STORAGE_KEY_GAS);
             const badge = document.getElementById('apiStatusBadge');
 
@@ -223,57 +209,51 @@
                 return;
             }
 
-            // 檢查是否為 file:// 協議
-            if (window.location.protocol === 'file:') {
-                console.warn("當前處於本地 file:// 協定，可能受瀏覽器安全性限制導致 CORS 錯誤。建議使用 Live Server 或 GitHub Pages 測試。");
-            }
-
             badge.className = 'bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded-full font-semibold';
             badge.innerText = '連線同步中...';
 
-            try {
-                // 加上時間戳記防止快取
-                const requestUrl = `${gasUrl}?action=getData&_t=${new Date().getTime()}`;
-                
-                // 採用 standard redirect & cors 設定發送請求
-                const response = await fetch(requestUrl, {
-                    method: 'GET',
-                    redirect: 'follow'
-                });
+            // 全局 Callback 處理
+            window.handleGasResponse = function(result) {
+                // 清除暫存 script 標籤
+                const oldScript = document.getElementById('gas_jsonp_script');
+                if (oldScript) oldScript.remove();
 
-                if (!response.ok) {
-                    throw new Error(`HTTP 錯誤狀態: ${response.status}`);
-                }
-
-                const result = await response.json();
-                
-                if (result.status === 'success' || result.data) {
+                if (result && (result.success || result.status === 'success' || result.courses)) {
                     badge.className = 'bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded-full font-semibold';
                     badge.innerText = '已連線上 API';
 
-                    // 更新儀表板統計數字 (若有回傳)
                     if (result.courses) document.getElementById('statCourses').innerText = result.courses.length;
                     if (result.registrations) document.getElementById('statRegistrations').innerText = result.registrations.length;
 
                     if (showNotice) alert('資料同步成功！');
                 } else {
-                    throw new Error(result.message || '回傳格式不符');
+                    badge.className = 'bg-rose-100 text-rose-800 text-xs px-2 py-0.5 rounded-full font-semibold';
+                    badge.innerText = '回應失敗';
+                    if (showNotice) alert('連線回應失敗：' + (result.message || '未知錯誤'));
                 }
+            };
 
-            } catch (err) {
-                console.error('無法連線 Google Apps Script:', err);
+            // 建立 Script Tag
+            const oldScript = document.getElementById('gas_jsonp_script');
+            if (oldScript) oldScript.remove();
+
+            const script = document.createElement('script');
+            script.id = 'gas_jsonp_script';
+            script.src = `${gasUrl}?action=getData&callback=handleGasResponse&_t=${new Date().getTime()}`;
+            
+            script.onerror = function() {
                 badge.className = 'bg-rose-100 text-rose-800 text-xs px-2 py-0.5 rounded-full font-semibold';
-                badge.innerText = '連線失敗 (CORS/網路錯誤)';
-
+                badge.innerText = '連線失敗';
                 if (showNotice) {
-                    alert(`連線失敗！\n錯誤原因：${err.message}\n\n提醒：若從本機檔案 (file://) 直接開啟，請改用 VS Code Live Server 或上傳至 GitHub Pages 進行測試。並確保 GAS 發布權限設為「任何人 (Anyone)」。`);
+                    alert('連線失敗！請確認：\n1. GAS 發布權限是否已設定為「任何人 (Anyone)」\n2. 網址是否以 /exec 結尾\n3. 是否已在新分頁開啟該 URL 完成授權。');
                 }
-            }
+            };
+
+            document.body.appendChild(script);
         }
 
         function toggleAdminPanel() {
-            const banner = document.getElementById('adminBanner');
-            banner.classList.toggle('hidden');
+            document.getElementById('adminBanner').classList.toggle('hidden');
         }
 
         function logoutAdmin() {
@@ -285,9 +265,7 @@
 
         function changePassword() {
             const newPwd = prompt('請輸入新密碼：');
-            if (newPwd) {
-                alert('密碼修改完成！');
-            }
+            if (newPwd) alert('密碼修改完成！');
         }
     </script>
 </body>
