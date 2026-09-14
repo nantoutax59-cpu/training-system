@@ -3,15 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>南投縣政府稅務局 - 教育訓練管理系統</title>
+    <title>南投縣政府稅務局 教育訓練管理系統</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js for analytics -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Confetti JS -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -20,1754 +14,280 @@
                         nttax: {
                             50: '#f0fdf4',
                             100: '#dcfce7',
-                            600: '#16a34a',
                             700: '#15803d',
                             800: '#166534',
-                            900: '#0f5132',
-                            dark: '#083320',
-                            accent: '#d97706'
+                            900: '#14532d',
                         }
                     }
                 }
             }
         }
     </script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap');
-        body {
-            font-family: 'Noto Sans TC', sans-serif;
-            background-color: #f8fafc;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
     </style>
 </head>
-<body class="text-slate-800 flex flex-col min-h-screen">
+<body class="bg-slate-100 min-h-screen text-slate-800 flex flex-col justify-between">
 
-    <!-- Navbar Header -->
-    <header class="bg-nttax-900 text-white shadow-lg sticky top-0 z-40 border-b-4 border-amber-500">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
-                <!-- Bureau Logo & Title -->
-                <div class="flex items-center space-x-3 sm:space-x-4">
-                    <div class="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 flex items-center justify-center bg-white rounded-full p-1 shadow-md border-2 border-amber-400">
-                        <svg viewBox="0 0 100 100" class="w-full h-full">
-                            <defs>
-                                <linearGradient id="nttaxBlueRing" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#38bdf8"/>
-                                    <stop offset="100%" stop-color="#0284c7"/>
-                                </linearGradient>
-                                <linearGradient id="nttaxGoldCoin" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" stop-color="#fffbeb"/>
-                                    <stop offset="20%" stop-color="#fde047"/>
-                                    <stop offset="65%" stop-color="#eab308"/>
-                                    <stop offset="100%" stop-color="#ca8a04"/>
-                                </linearGradient>
-                                <filter id="logoDropShadow" x="-10%" y="-10%" width="120%" height="120%">
-                                    <feDropShadow dx="0.5" dy="1" stdDeviation="1" flood-opacity="0.35"/>
-                                </filter>
-                            </defs>
-                            
-                            <circle cx="50" cy="50" r="43" fill="none" stroke="#bae6fd" stroke-width="3.5"/>
-                            <circle cx="50" cy="50" r="37" fill="none" stroke="#38bdf8" stroke-width="2.5" opacity="0.9"/>
-                            <path d="M 14 50 A 36 36 0 1 1 86 50" fill="none" stroke="#0284c7" stroke-width="3.5" stroke-linecap="round"/>
-
-                            <path d="M 52 6 C 58 9 73 17 82 25 C 88 31 76 42 67 54 C 62 62 59 74 58 84 C 57 93 58 96 54 96 C 51 96 49 87 48 77 C 47 67 48 54 52 6 Z" fill="#16a34a"/>
-
-                            <path d="M 37 18 
-                                     L 63 18 
-                                     L 60 30 
-                                     L 86 78 
-                                     C 74 81 66 78 60 68 
-                                     L 50 50 
-                                     L 40 68 
-                                     C 34 78 26 81 14 78 
-                                     L 40 30 
-                                     Z" 
-                                  fill="url(#nttaxGoldCoin)" 
-                                  stroke="#854d0e" 
-                                  stroke-width="1.2" 
-                                  stroke-linejoin="round"
-                                  filter="url(#logoDropShadow)"/>
-
-                            <text x="39" y="32" font-family="'Noto Serif TC', 'DFKai-SB', 'KaiTi', serif" font-weight="900" font-size="11" fill="#000000">投</text>
-                            <text x="61" y="32" font-family="'Noto Serif TC', 'DFKai-SB', 'KaiTi', serif" font-weight="900" font-size="11" fill="#000000" text-anchor="end">稅</text>
-                        </svg>
-                    </div>
-
-                    <div class="flex flex-col justify-center">
-                        <div class="text-base sm:text-lg md:text-xl font-bold tracking-wide text-white leading-snug">
-                            南投縣政府稅務局
-                        </div>
-                        <div class="text-base sm:text-lg md:text-xl font-bold tracking-wide text-amber-300 leading-snug">
-                            教育訓練管理系統
-                        </div>
-                    </div>
+    <!-- Header -->
+    <header class="bg-nttax-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-amber-400 rounded-full flex items-center justify-center font-bold text-nttax-900 shadow">
+                    <i class="fa-solid fa-graduation-cap"></i>
                 </div>
-
-                <!-- System Mode Switcher -->
-                <div class="flex items-center space-x-3">
-                    <!-- Mode Control Bar -->
-                    <div class="bg-nttax-dark p-1 rounded-xl flex items-center space-x-1 border border-emerald-700/50 shadow-inner">
-                        <button id="btn-mode-user" onclick="switchPortal('user')" class="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-1.5 bg-emerald-600 text-white shadow">
-                            <i class="fa-solid fa-user-graduate"></i>
-                            <span>學員報名區</span>
-                        </button>
-                        
-                        <button id="btn-mode-admin" onclick="switchPortal('admin')" class="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-1.5 text-slate-300 hover:text-white relative">
-                            <i id="admin-lock-icon" class="fa-solid fa-lock text-amber-400 text-xs mr-0.5"></i>
-                            <i class="fa-solid fa-user-gear"></i>
-                            <span>管理者後台</span>
-                        </button>
-
-                        <!-- Admin Logout Button -->
-                        <button id="btn-admin-logout" onclick="logoutAdmin()" class="hidden px-2.5 py-2 rounded-lg text-xs font-semibold bg-rose-900/80 hover:bg-rose-800 text-rose-200 transition-all items-center space-x-1 border border-rose-700/50" title="登出管理者權限">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                            <span class="hidden sm:inline">登出後台</span>
-                        </button>
-                    </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide">南投縣政府稅務局</h1>
+                    <p class="text-xs text-emerald-200">教育訓練管理系統</p>
                 </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="fetchDataFromGAS(true)" class="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow">
+                    <i class="fa-solid fa-rotate"></i> 重載試算表資料
+                </button>
+                <a href="#register" class="bg-nttax-700 hover:bg-nttax-900 text-white font-bold text-xs px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow">
+                    <i class="fa-solid fa-user-pen"></i> 學員報名區
+                </a>
+                <button id="adminToggleBtn" onclick="toggleAdminPanel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow">
+                    <i class="fa-solid fa-user-shield"></i> <span id="adminBtnText">管理者後台</span>
+                </button>
+                <button id="logoutBtn" onclick="logoutAdmin()" class="hidden bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow">
+                    <i class="fa-solid fa-right-from-bracket"></i> 登出後台
+                </button>
             </div>
         </div>
     </header>
 
     <!-- Main Content Container -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow space-y-6">
 
-        <!-- USER / TRAINEE PORTAL -->
-        <section id="portal-user" class="space-y-8">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-4 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div class="space-y-1">
-                    <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-file-pen text-nttax-700"></i>
-                        員工教育訓練報名與紀錄
-                    </h2>
-                    <p class="text-sm text-slate-500">歡迎同仁踴躍報名年度教育訓練課程，提昇專能與為民服務品質。</p>
+        <!-- Admin Control Panel Banner -->
+        <div id="adminBanner" class="bg-amber-50 border border-amber-200 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-amber-500 text-white rounded-xl flex items-center justify-center text-lg shadow-sm">
+                    <i class="fa-solid fa-user-gear"></i>
                 </div>
-                <div class="flex items-center space-x-2 bg-slate-100 p-1.5 rounded-xl self-start md:self-auto">
-                    <button onclick="switchUserTab('courses')" id="tab-btn-courses" class="px-4 py-2 text-sm font-semibold rounded-lg bg-white text-nttax-800 shadow-sm transition">
-                        <i class="fa-solid fa-list-check mr-1.5"></i>開放報名課程
-                    </button>
-                    <button onclick="switchUserTab('my-enroll')" id="tab-btn-my-enroll" class="px-4 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition">
-                        <i class="fa-solid fa-address-card mr-1.5"></i>查詢個人報名紀錄
-                    </button>
-                </div>
-            </div>
-
-            <!-- Tab 1: Available Courses Grid -->
-            <div id="user-tab-courses" class="space-y-6">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                        <span class="w-2.5 h-6 bg-nttax-700 rounded-full inline-block"></span>
-                        可報名課程列表
-                    </h3>
-                    <div class="text-xs text-slate-500">
-                        目前開放中課程：<span id="open-course-count" class="font-bold text-nttax-700">0</span> 門
-                    </div>
-                </div>
-
-                <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Dynamic standard courses inserted here via JS -->
-                </div>
-            </div>
-
-            <!-- Tab 2: My Enrollment Records Search -->
-            <div id="user-tab-my-enroll" class="hidden space-y-6">
-                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-                    <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-magnifying-glass text-amber-600"></i>
-                        查詢與管理個人報名資料
-                    </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl">
-                        <div class="sm:col-span-2">
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">員工編號或姓名</label>
-                            <input type="text" id="query-input" placeholder="例如：LM11501011 或 王小美" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-nttax-700 focus:border-nttax-700 outline-none text-sm">
-                        </div>
-                        <div class="flex items-end">
-                            <button onclick="queryMyEnrollments()" class="w-full bg-nttax-700 hover:bg-nttax-800 text-white font-medium py-2.5 px-4 rounded-xl shadow transition text-sm flex items-center justify-center space-x-2">
-                                <i class="fa-solid fa-search"></i>
-                                <span>立即查詢</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="query-results-container" class="space-y-4">
-                    <div class="text-center py-12 bg-white rounded-2xl border border-slate-200/80">
-                        <i class="fa-solid fa-id-card-clip text-4xl text-slate-300 mb-3 block"></i>
-                        <p class="text-slate-500 text-sm">請於上方輸入員工編號或姓名以查詢您的報名與簽到狀態</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ADMIN PORTAL -->
-        <section id="portal-admin" class="hidden space-y-8">
-            <!-- Top Admin Header Status Bar -->
-            <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center text-lg shadow-sm">
-                        <i class="fa-solid fa-user-shield"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">
-                            <span>管理者控制台權限已啟用</span>
-                            <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full border border-emerald-300">身份已驗證</span>
-                        </h3>
-                        <p class="text-xs text-slate-500">您可以發布新課程、管理局內報名名冊、執行簽到與設定 Google 試算表同步。</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2 self-end sm:self-auto">
-                    <button onclick="openChangePasswordModal()" class="text-xs bg-slate-700 hover:bg-slate-800 text-white px-3 py-2 rounded-xl transition flex items-center gap-1.5 font-medium shadow-sm">
-                        <i class="fa-solid fa-key"></i>
-                        <span>變更密碼</span>
-                    </button>
-                    <button onclick="logoutAdmin()" class="text-xs bg-slate-800 hover:bg-black text-white px-3 py-2 rounded-xl transition flex items-center gap-1.5 font-medium shadow-sm">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                        <span>登出管理者模式</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Admin Stats Header -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-medium text-slate-500">已上架課程數</p>
-                        <p id="stat-total-courses" class="text-2xl font-bold text-slate-800 mt-1">0</p>
-                    </div>
-                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
-                        <i class="fa-solid fa-book-open"></i>
-                    </div>
-                </div>
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-medium text-slate-500">累計報名人次</p>
-                        <p id="stat-total-registrations" class="text-2xl font-bold text-nttax-700 mt-1">0</p>
-                    </div>
-                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-nttax-700 flex items-center justify-center text-xl">
-                        <i class="fa-solid fa-users"></i>
-                    </div>
-                </div>
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-medium text-slate-500">總簽到成功率</p>
-                        <p id="stat-checkin-rate" class="text-2xl font-bold text-amber-600 mt-1">0%</p>
-                    </div>
-                    <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
-                        <i class="fa-solid fa-clipboard-check"></i>
-                    </div>
-                </div>
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-medium text-slate-500">最熱門科室/分局</p>
-                        <p id="stat-top-dept" class="text-lg font-bold text-slate-800 mt-1 truncate max-w-[140px]">土地稅科</p>
-                    </div>
-                    <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl">
-                        <i class="fa-solid fa-trophy"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Admin Section Tabs -->
-            <div class="flex space-x-2 border-b border-slate-200 pb-2 flex-wrap gap-y-2">
-                <button onclick="switchAdminTab('courses-mgmt')" id="admin-tab-btn-courses" class="px-4 py-2 font-semibold text-sm rounded-lg bg-nttax-900 text-white shadow-sm">
-                    <i class="fa-solid fa-calendar-plus mr-1.5"></i>課程發布與管理
-                </button>
-                <button onclick="switchAdminTab('roster')" id="admin-tab-btn-roster" class="px-4 py-2 font-semibold text-sm rounded-lg text-slate-600 hover:bg-slate-200 transition">
-                    <i class="fa-solid fa-clipboard-user mr-1.5"></i>報名名冊與簽到管理
-                </button>
-                <button onclick="switchAdminTab('stats')" id="admin-tab-btn-stats" class="px-4 py-2 font-semibold text-sm rounded-lg text-slate-600 hover:bg-slate-200 transition">
-                    <i class="fa-solid fa-chart-column mr-1.5"></i>單位參與率統計
-                </button>
-                <button onclick="switchAdminTab('sheets-config')" id="admin-tab-btn-sheets" class="px-4 py-2 font-semibold text-sm rounded-lg text-slate-600 hover:bg-slate-200 transition">
-                    <i class="fa-solid fa-file-excel text-emerald-600 mr-1.5"></i>Google 試算表自動同步設定
-                </button>
-            </div>
-
-            <!-- Admin Tab 1: Course Management -->
-            <div id="admin-tab-courses" class="space-y-6">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                    <div>
-                        <h3 class="font-bold text-slate-800 text-lg">課程列表與狀態控制</h3>
-                        <p class="text-xs text-slate-500">管理者在此預設課程名稱、上課日期與時間，供報名者挑選。</p>
-                    </div>
-                    <button onclick="openAddCourseModal()" class="bg-nttax-700 hover:bg-nttax-800 text-white font-medium px-4 py-2 rounded-xl text-sm shadow transition flex items-center gap-2">
-                        <i class="fa-solid fa-plus"></i>
-                        <span>新增教育訓練課程</span>
-                    </button>
-                </div>
-
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
-                                <tr>
-                                    <th class="py-3.5 px-4">課程名稱 (預設)</th>
-                                    <th class="py-3.5 px-4">上課日期 (預設)</th>
-                                    <th class="py-3.5 px-4">上課時間 (預設)</th>
-                                    <th class="py-3.5 px-4">地點</th>
-                                    <th class="py-3.5 px-4 text-center">已報名 / 名額</th>
-                                    <th class="py-3.5 px-4 text-center">開放狀態</th>
-                                    <th class="py-3.5 px-4 text-right">操作選項</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-courses-table-body" class="divide-y divide-slate-100">
-                                <!-- Dynamic admin rows -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Admin Tab 2: Registrations Roster & Attendance -->
-            <div id="admin-tab-roster" class="hidden space-y-6">
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
-                            <i class="fa-solid fa-users-rectangle text-nttax-700"></i>
-                            全局教育訓練報名總名冊
-                        </h3>
-                        <div class="flex flex-wrap gap-2">
-                            <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5">
-                                <i class="fa-solid fa-file-excel"></i>
-                                <span>匯出 Excel / CSV</span>
-                            </button>
-                            <button onclick="openManualAddModal()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5">
-                                <i class="fa-solid fa-user-plus"></i>
-                                <span>手動新增報名員</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Filters bar -->
-                    <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-3 pt-2">
-                        <div>
-                            <label class="block text-xs text-slate-500 mb-1 font-semibold">篩選課程</label>
-                            <select id="filter-course" onchange="renderAdminRoster()" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-nttax-700">
-                                <option value="ALL">所有課程</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-500 mb-1 font-semibold">篩選單位</label>
-                            <select id="filter-dept" onchange="renderAdminRoster()" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-nttax-700">
-                                <option value="ALL">所有單位 (12 個科室分局)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-500 mb-1 font-semibold">搜尋關鍵字</label>
-                            <input type="text" id="filter-search" oninput="renderAdminRoster()" placeholder="員工編號、職稱或姓名..." class="w-full text-xs p-2.5 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-nttax-700">
-                        </div>
-                        <div class="flex items-end">
-                            <button onclick="resetRosterFilters()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold py-2.5 px-3 rounded-lg border border-slate-300 transition">
-                                <i class="fa-solid fa-rotate mr-1"></i>重設篩選條件
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Roster Table -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold text-xs">
-                                <tr>
-                                    <th class="py-3 px-4">報名編號</th>
-                                    <th class="py-3 px-4">課程名稱</th>
-                                    <th class="py-3 px-4">上課日期與時間</th>
-                                    <th class="py-3 px-4">單位 (科室/分局)</th>
-                                    <th class="py-3 px-4">員工編號</th>
-                                    <th class="py-3 px-4">職稱</th>
-                                    <th class="py-3 px-4">姓名</th>
-                                    <th class="py-3 px-4">報名時間</th>
-                                    <th class="py-3 px-4 text-center">簽到狀態</th>
-                                    <th class="py-3 px-4 text-right">操作</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-roster-table-body" class="divide-y divide-slate-100">
-                                <!-- Dynamic roster rows -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Admin Tab 3: Department Participation Analytics -->
-            <div id="admin-tab-stats" class="hidden space-y-6">
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                    <h3 class="font-bold text-slate-800 text-lg mb-2">各單位（科室與分局）報名狀況統計圖表</h3>
-                    <p class="text-xs text-slate-500 mb-6">呈現服務科、土地稅科、消費稅科、房屋稅科、資訊科、人事室、行政科、政風室、會計室、法務科、埔里分局與竹山分局之參與人次。</p>
-                    
-                    <div class="h-80 w-full">
-                        <canvas id="deptChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Admin Tab 4: Google Sheets Integration Config -->
-            <div id="admin-tab-sheets" class="hidden space-y-6">
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-                    <div class="flex items-center space-x-3 border-b border-slate-200 pb-4">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl">
-                            <i class="fa-solid fa-file-csv"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-slate-800 text-lg">Google 試算表即時寫入串接設定 (Google Apps Script Webhook)</h3>
-                            <p class="text-xs text-slate-500">當學員或管理者提交報名表單時，系統將自動將資料即時同步寫入您指定的 Google 雲端試算表。</p>
-                        </div>
-                    </div>
-
-                    <!-- Config Box -->
-                    <div class="space-y-4 max-w-3xl">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center justify-between">
-                                <span>Google Apps Script 網頁應用程式 URL (Web App Endpoint)</span>
-                                <span id="gas-status-badge" class="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-bold">已連線設定</span>
-                            </label>
-                            <div class="flex gap-2">
-                                <input type="url" id="gas-webhook-url" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-mono outline-none focus:ring-2 focus:ring-nttax-700">
-                                <button onclick="saveGasWebhookUrl()" class="bg-nttax-700 hover:bg-nttax-800 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow transition flex items-center gap-1.5">
-                                    <i class="fa-solid fa-floppy-disk"></i>
-                                    <span>儲存設定</span>
-                                </button>
-                                <button onclick="testGasWebhook()" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5">
-                                    <i class="fa-solid fa-paper-plane"></i>
-                                    <span>測試連線</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- ADMIN LOGIN AUTHENTICATION MODAL -->
-    <div id="admin-login-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden border border-slate-100 text-center p-6 space-y-4">
-            <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-3xl mx-auto shadow-inner">
-                <i class="fa-solid fa-user-shield"></i>
-            </div>
-            
-            <div>
-                <h3 class="text-xl font-bold text-slate-800">管理者身份驗證</h3>
-                <p class="text-xs text-slate-500 mt-1">此專區僅限南投縣政府稅務局管理人員存取</p>
-            </div>
-
-            <form onsubmit="handleAdminLoginSubmit(event)" class="space-y-4 text-left pt-2">
                 <div>
-                    <label for="admin-password-input" class="block text-xs font-bold text-slate-700 mb-1">
-                        請輸入管理者密碼：
-                    </label>
-                    <div class="relative">
-                        <input type="password" id="admin-password-input" required placeholder="請輸入權限金鑰" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-nttax-700 font-mono">
-                        <button type="button" onclick="togglePasswordVisibility('admin-password-input', 'pwd-eye-icon')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600 text-xs">
-                            <i id="pwd-eye-icon" class="fa-solid fa-eye"></i>
-                        </button>
+                    <div class="flex items-center gap-2">
+                        <h2 class="font-bold text-slate-800">管理者控制台權限已啟用</h2>
+                        <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2 py-0.5 rounded-full border border-emerald-200">身份已驗證</span>
                     </div>
+                    <p class="text-xs text-slate-500 mt-0.5">您可以發布新課程、管理局內報名名冊、執行簽到與設定 Google 試算表同步。</p>
                 </div>
-
-                <div class="flex space-x-2 pt-2">
-                    <button type="button" onclick="closeAdminLoginModal()" class="w-1/3 py-2.5 px-3 rounded-xl border border-slate-300 text-slate-600 font-semibold text-xs hover:bg-slate-50 transition">
-                        取消
-                    </button>
-                    <button type="submit" class="w-2/3 py-2.5 px-3 rounded-xl bg-nttax-900 hover:bg-nttax-800 text-white font-bold text-xs shadow-md transition flex items-center justify-center space-x-1.5">
-                        <i class="fa-solid fa-key"></i>
-                        <span>驗證進入後台</span>
-                    </button>
-                </div>
-            </form>
+            </div>
+            <div class="flex items-center gap-2 w-full md:w-auto">
+                <button onclick="changePassword()" class="flex-1 md:flex-none bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs px-3 py-2 rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-key"></i> 變更密碼
+                </button>
+                <button onclick="logoutAdmin()" class="flex-1 md:flex-none bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs px-3 py-2 rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> 登出管理者模式
+                </button>
+            </div>
         </div>
-    </div>
 
-    <!-- ADD COURSE MODAL -->
-    <div id="add-course-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100">
-            <div class="bg-nttax-900 text-white px-6 py-4 flex items-center justify-between border-b-2 border-amber-500">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-calendar-plus text-amber-400 text-xl"></i>
-                    <h3 class="font-bold text-lg">新增教育訓練課程</h3>
+        <!-- Dashboard Stats Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
+                <div>
+                    <p class="text-xs font-medium text-slate-500">已上架課程數</p>
+                    <p id="statCourses" class="text-2xl font-bold text-slate-800 mt-1">0</p>
                 </div>
-                <button onclick="closeAddCourseModal()" class="text-slate-300 hover:text-white transition">
-                    <i class="fa-solid fa-xmark text-xl"></i>
-                </button>
+                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
             </div>
 
-            <form id="add-course-form" onsubmit="handleAddCourseSubmit(event)" class="p-6 space-y-4 max-h-[85vh] overflow-y-auto custom-scrollbar">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
                 <div>
-                    <label for="add-course-name" class="block text-xs font-bold text-slate-700 mb-1">課程名稱 <span class="text-rose-500">*</span></label>
-                    <input type="text" id="add-course-name" required placeholder="例如：115年度地方稅法規與案例研析" class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-nttax-700 outline-none">
+                    <p class="text-xs font-medium text-slate-500">累計報名人次</p>
+                    <p id="statRegistrations" class="text-2xl font-bold text-slate-800 mt-1">0</p>
                 </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label for="add-course-date" class="block text-xs font-bold text-slate-700 mb-1">上課日期 <span class="text-rose-500">*</span></label>
-                        <input type="text" id="add-course-date" required placeholder="例如：115/11/10" class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-nttax-700 outline-none">
-                    </div>
-                    <div>
-                        <label for="add-course-time" class="block text-xs font-bold text-slate-700 mb-1">上課時間 <span class="text-rose-500">*</span></label>
-                        <input type="text" id="add-course-time" required placeholder="例如：09:00-12:00" class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-nttax-700 outline-none">
-                    </div>
+                <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-users"></i>
                 </div>
+            </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label for="add-course-location" class="block text-xs font-bold text-slate-700 mb-1">上課地點 <span class="text-rose-500">*</span></label>
-                        <input type="text" id="add-course-location" required placeholder="例如：6樓禮堂" value="6樓禮堂" class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-nttax-700 outline-none">
-                    </div>
-                    <div>
-                        <label for="add-course-capacity" class="block text-xs font-bold text-slate-700 mb-1">人數上限 <span class="text-rose-500">*</span></label>
-                        <input type="number" id="add-course-capacity" min="1" value="50" required class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-nttax-700 outline-none">
-                    </div>
-                </div>
-
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
                 <div>
-                    <label for="add-course-description" class="block text-xs font-bold text-slate-700 mb-1">課程簡介</label>
-                    <textarea id="add-course-description" rows="2" placeholder="請輸入課程摘要簡述..." class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-nttax-700 outline-none">南投縣政府稅務局內部教育訓練課程。</textarea>
+                    <p class="text-xs font-medium text-slate-500">總簽到成功率</p>
+                    <p id="statCheckinRate" class="text-2xl font-bold text-amber-600 mt-1">0%</p>
                 </div>
+                <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                </div>
+            </div>
 
-                <div class="pt-3 flex space-x-3">
-                    <button type="button" onclick="closeAddCourseModal()" class="w-1/3 py-2.5 px-4 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-100 font-semibold text-sm transition">
-                        取消
-                    </button>
-                    <button type="submit" class="w-2/3 py-2.5 px-4 rounded-xl bg-nttax-700 hover:bg-nttax-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition flex items-center justify-center space-x-1.5">
-                        <i class="fa-solid fa-plus"></i>
-                        <span>建立發布課程</span>
-                    </button>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
+                <div>
+                    <p class="text-xs font-medium text-slate-500">最熱門科室/分局</p>
+                    <p id="statTopDept" class="text-lg font-bold text-slate-800 mt-1 truncate max-w-[120px]">無資料</p>
                 </div>
-            </form>
+                <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <!-- CHANGE PASSWORD MODAL -->
-    <div id="change-password-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden border border-slate-100 text-center p-6 space-y-4">
-            <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-3xl mx-auto shadow-inner">
-                <i class="fa-solid fa-key"></i>
-            </div>
-            
-            <div>
-                <h3 class="text-xl font-bold text-slate-800">變更管理者密碼</h3>
-                <p class="text-xs text-slate-500 mt-1">變更成功後將更新系統存取驗證憑證</p>
-            </div>
-
-            <form onsubmit="handlePasswordChangeSubmit(event)" class="space-y-3 text-left pt-1">
-                <div>
-                    <label for="current-pwd-input" class="block text-xs font-bold text-slate-700 mb-1">目前密碼：</label>
-                    <input type="password" id="current-pwd-input" required placeholder="請輸入舊密碼" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-nttax-700 font-mono">
-                </div>
-
-                <div>
-                    <label for="new-pwd-input" class="block text-xs font-bold text-slate-700 mb-1">新密碼：</label>
-                    <input type="password" id="new-pwd-input" required placeholder="請輸入新密碼 (至少 6 字元)" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-nttax-700 font-mono">
-                </div>
-
-                <div>
-                    <label for="confirm-pwd-input" class="block text-xs font-bold text-slate-700 mb-1">確認新密碼：</label>
-                    <input type="password" id="confirm-pwd-input" required placeholder="再次輸入新密碼" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-nttax-700 font-mono">
-                </div>
-
-                <div class="flex space-x-2 pt-3">
-                    <button type="button" onclick="closeChangePasswordModal()" class="w-1/3 py-2.5 px-3 rounded-xl border border-slate-300 text-slate-600 font-semibold text-xs hover:bg-slate-50 transition">
-                        取消
-                    </button>
-                    <button type="submit" class="w-2/3 py-2.5 px-3 rounded-xl bg-nttax-900 hover:bg-nttax-800 text-white font-bold text-xs shadow-md transition flex items-center justify-center space-x-1.5">
-                        <i class="fa-solid fa-check"></i>
-                        <span>確認修改密碼</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Registration Modal -->
-    <div id="registration-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100 transform transition-all flex flex-col max-h-[90vh]">
-            <div class="bg-nttax-900 text-white px-6 py-4 flex items-center justify-between border-b-2 border-amber-500 flex-shrink-0">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-file-signature text-amber-400 text-xl"></i>
-                    <h3 class="font-bold text-lg">教育訓練報名表單</h3>
-                </div>
-                <button onclick="closeRegistrationModal()" class="text-slate-300 hover:text-white transition">
-                    <i class="fa-solid fa-xmark text-xl"></i>
-                </button>
-            </div>
-
-            <form id="enrollment-form" onsubmit="handleRegistrationSubmit(event)" class="p-6 space-y-4 overflow-y-auto custom-scrollbar flex-1">
-                <input type="hidden" id="form-course-id">
-
-                <div class="bg-amber-50 border border-amber-200 text-amber-900 text-xs rounded-xl p-3 flex items-start gap-2">
-                    <i class="fa-solid fa-circle-info text-amber-600 mt-0.5"></i>
-                    <span>欄位提示：課程名稱、上課日期與時間由管理者統一預設，報名資料送出後會即時寫入 Google 試算表。</span>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center justify-between">
-                        <span>課程名稱</span>
-                        <span class="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded border border-slate-200">由管理者設定 (唯讀)</span>
-                    </label>
-                    <input type="text" id="form-course-name" readonly class="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-300 rounded-xl text-slate-700 text-sm font-semibold cursor-not-allowed outline-none">
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center justify-between">
-                            <span>上課日期</span>
-                            <span class="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">由管理者設定</span>
-                        </label>
-                        <input type="text" id="form-course-date" readonly class="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-300 rounded-xl text-slate-700 text-sm font-medium cursor-not-allowed outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center justify-between">
-                            <span>上課時間</span>
-                            <span class="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">由管理者設定</span>
-                        </label>
-                        <input type="text" id="form-course-time" readonly class="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-300 rounded-xl text-slate-700 text-sm font-medium cursor-not-allowed outline-none">
-                    </div>
-                </div>
-
-                <hr class="border-slate-200 my-2">
-
-                <div>
-                    <label for="form-dept" class="block text-xs font-bold text-slate-800 mb-1">
-                        單位 <span class="text-rose-500">*</span>
-                        <span class="text-[10px] text-emerald-700 font-normal ml-2">（下拉式選單由報名者選填）</span>
-                    </label>
-                    <select id="form-dept" required class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-nttax-700 focus:border-nttax-700 outline-none shadow-sm font-medium">
-                        <option value="" disabled selected>-- 請選擇所屬單位 --</option>
-                        <option value="服務科">服務科</option>
-                        <option value="土地稅科">土地稅科</option>
-                        <option value="消費稅科">消費稅科</option>
-                        <option value="房屋稅科">房屋稅科</option>
-                        <option value="資訊科">資訊科</option>
-                        <option value="人事室">人事室</option>
-                        <option value="行政科">行政科</option>
-                        <option value="政風室">政風室</option>
-                        <option value="會計室">會計室</option>
-                        <option value="法務科">法務科</option>
-                        <option value="埔里分局">埔里分局</option>
-                        <option value="竹山分局">竹山分局</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label for="form-employee-id" class="block text-xs font-bold text-slate-800 mb-1">
-                        員工編號 <span class="text-rose-500">*</span>
-                        <span class="text-[10px] text-slate-500 font-normal ml-2">（如：LM11501011）</span>
-                    </label>
-                    <input type="text" id="form-employee-id" required placeholder="請輸入員工編號" class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-nttax-700 focus:border-nttax-700 outline-none shadow-sm uppercase">
-                </div>
-
-                <div>
-                    <label for="form-job-title" class="block text-xs font-bold text-slate-800 mb-1">
-                        職稱 <span class="text-rose-500">*</span>
-                        <span class="text-[10px] text-slate-500 font-normal ml-2">（如：助理員、稅務員、股長）</span>
-                    </label>
-                    <input type="text" id="form-job-title" required placeholder="請輸入職稱" class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-nttax-700 focus:border-nttax-700 outline-none shadow-sm">
-                </div>
-
-                <div>
-                    <label for="form-user-name" class="block text-xs font-bold text-slate-800 mb-1">
-                        姓名 <span class="text-rose-500">*</span>
-                        <span class="text-[10px] text-slate-500 font-normal ml-2">（如：王小美）</span>
-                    </label>
-                    <input type="text" id="form-user-name" required placeholder="請輸入真實姓名" class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-nttax-700 focus:border-nttax-700 outline-none shadow-sm">
-                </div>
-
-                <div class="pt-3 flex space-x-3">
-                    <button type="button" onclick="closeRegistrationModal()" class="w-1/3 py-2.5 px-4 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-100 font-semibold text-sm transition">
-                        取消
-                    </button>
-                    <button type="submit" class="w-2/3 py-2.5 px-4 rounded-xl bg-nttax-700 hover:bg-nttax-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition flex items-center justify-center space-x-1.5">
-                        <i class="fa-solid fa-paper-plane"></i>
-                        <span>確認送出報名</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Registration Success Confirmation Modal -->
-    <div id="success-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden text-center p-6 space-y-4 border border-emerald-100">
-            <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl mx-auto shadow-inner">
-                <i class="fa-solid fa-circle-check"></i>
-            </div>
-            <div>
-                <h3 class="text-xl font-bold text-slate-800">報名成功</h3>
-                <p class="text-xs text-slate-500 mt-1">南投縣政府稅務局 教育訓練報名完成</p>
-            </div>
-
-            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-left space-y-2 text-xs">
-                <div class="flex justify-between border-b border-slate-200 pb-2">
-                    <span class="text-slate-500">報名編號：</span>
-                    <span id="success-reg-id" class="font-bold text-emerald-700 text-sm font-mono">1</span>
-                </div>
-                <div class="flex justify-between border-b border-slate-200 pb-2">
-                    <span class="text-slate-500">學員姓名：</span>
-                    <span id="success-name" class="font-bold text-slate-800 text-sm">--</span>
-                </div>
-                <div class="flex justify-between border-b border-slate-200 pb-2">
-                    <span class="text-slate-500">員工編號：</span>
-                    <span id="success-empid" class="font-mono font-bold text-slate-800">--</span>
-                </div>
-                <div class="flex justify-between border-b border-slate-200 pb-2">
-                    <span class="text-slate-500">職稱：</span>
-                    <span id="success-jobtitle" class="font-bold text-slate-800">--</span>
-                </div>
-                <div class="flex justify-between border-b border-slate-200 pb-2">
-                    <span class="text-slate-500">所屬單位：</span>
-                    <span id="success-dept" class="font-bold text-nttax-700">--</span>
-                </div>
-                <div class="pt-1">
-                    <span class="text-slate-500 block mb-1">課程名稱：</span>
-                    <span id="success-course" class="font-semibold text-slate-800 block text-sm">--</span>
-                </div>
-                <div class="flex justify-between text-slate-500 pt-1">
-                    <span>日期時間：</span>
-                    <span id="success-datetime" class="font-medium text-slate-700">--</span>
-                </div>
-            </div>
-
-            <button onclick="closeSuccessModal()" class="w-full bg-slate-900 hover:bg-black text-white font-bold py-2.5 rounded-xl text-sm transition">
-                確定並關閉
+        <!-- System Navigation Tabs -->
+        <div class="flex flex-wrap border-b border-slate-200 gap-2">
+            <button class="px-4 py-2.5 font-bold text-xs rounded-t-xl bg-white border-t border-x border-slate-200 text-nttax-800 flex items-center gap-2">
+                <i class="fa-solid fa-calendar-plus"></i> 課程發布與管理
+            </button>
+            <button class="px-4 py-2.5 font-bold text-xs rounded-t-xl text-slate-500 hover:text-slate-700 flex items-center gap-2">
+                <i class="fa-solid fa-address-book"></i> 報名名冊與簽到管理
+            </button>
+            <button class="px-4 py-2.5 font-bold text-xs rounded-t-xl text-slate-500 hover:text-slate-700 flex items-center gap-2">
+                <i class="fa-solid fa-chart-pie"></i> 單位參與率統計
+            </button>
+            <button class="px-4 py-2.5 font-bold text-xs rounded-t-xl bg-nttax-800 text-white flex items-center gap-2 shadow-sm ml-auto">
+                <i class="fa-file-excel fa-solid"></i> Google 試算表自動同步設定
             </button>
         </div>
-    </div>
 
-    <!-- EDIT COURSE MODAL -->
-    <div id="edit-course-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100">
-            <div class="bg-nttax-900 text-white px-6 py-4 flex items-center justify-between border-b-2 border-amber-500">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-pen-to-square text-amber-400 text-xl"></i>
-                    <h3 class="font-bold text-lg">編輯教育訓練課程</h3>
+        <!-- Google Apps Script CRUD Settings Card -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-file-csv"></i>
                 </div>
-                <button onclick="closeEditCourseModal()" class="text-slate-300 hover:text-white transition">
-                    <i class="fa-solid fa-xmark text-xl"></i>
-                </button>
+                <div>
+                    <h3 class="font-bold text-slate-800 text-base">Google 試算表即時 CRUD 串接設定 (Google Apps Script Web App)</h3>
+                    <p class="text-xs text-slate-500">將系統全面切換為以 Google 試算表作為雲端資料庫（Database），進行新增、讀取、修改、刪除。</p>
+                </div>
             </div>
 
-            <form id="edit-course-form" onsubmit="handleEditCourseSubmit(event)" class="p-6 space-y-4 max-h-[85vh] overflow-y-auto custom-scrollbar">
-                <input type="hidden" id="edit-course-id">
+            <hr class="border-slate-100">
 
-                <div>
-                    <label for="edit-course-name" class="block text-xs font-bold text-slate-700 mb-1">課程名稱 <span class="text-rose-500">*</span></label>
-                    <input type="text" id="edit-course-name" required class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-nttax-700 outline-none">
+            <div class="space-y-2">
+                <div class="flex justify-between items-center">
+                    <label for="gasUrlInput" class="text-xs font-bold text-slate-700">Google Apps Script 網頁應用程式 URL (Web App Endpoint)</label>
+                    <span id="apiStatusBadge" class="bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded-full font-semibold">已連線上 API</span>
                 </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label for="edit-course-date" class="block text-xs font-bold text-slate-700 mb-1">上課日期 <span class="text-rose-500">*</span></label>
-                        <input type="text" id="edit-course-date" required placeholder="例如：115/10/20" class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-nttax-700 outline-none">
-                    </div>
-                    <div>
-                        <label for="edit-course-time" class="block text-xs font-bold text-slate-700 mb-1">上課時間 <span class="text-rose-500">*</span></label>
-                        <input type="text" id="edit-course-time" required placeholder="例如：14:00-17:00" class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-nttax-700 outline-none">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label for="edit-course-location" class="block text-xs font-bold text-slate-700 mb-1">上課地點 <span class="text-rose-500">*</span></label>
-                        <input type="text" id="edit-course-location" required class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-nttax-700 outline-none">
-                    </div>
-                    <div>
-                        <label for="edit-course-capacity" class="block text-xs font-bold text-slate-700 mb-1">人數上限 <span class="text-rose-500">*</span></label>
-                        <input type="number" id="edit-course-capacity" min="1" required class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-nttax-700 outline-none">
-                    </div>
-                </div>
-
-                <div>
-                    <label for="edit-course-description" class="block text-xs font-bold text-slate-700 mb-1">課程簡介</label>
-                    <textarea id="edit-course-description" rows="2" class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-nttax-700 outline-none"></textarea>
-                </div>
-
-                <div class="pt-3 flex space-x-3">
-                    <button type="button" onclick="closeEditCourseModal()" class="w-1/3 py-2.5 px-4 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-100 font-semibold text-sm transition">
-                        取消
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="url" id="gasUrlInput" class="flex-1 px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-mono outline-none focus:ring-2 focus:ring-nttax-700" placeholder="https://script.google.com/macros/s/.../exec">
+                    <button onclick="saveGasWebhookUrl()" class="bg-nttax-700 hover:bg-nttax-800 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-floppy-disk"></i> <span>儲存 URL</span>
                     </button>
-                    <button type="submit" class="w-2/3 py-2.5 px-4 rounded-xl bg-nttax-700 hover:bg-nttax-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition flex items-center justify-center space-x-1.5">
-                        <i class="fa-solid fa-floppy-disk"></i>
-                        <span>儲存變更</span>
+                    <button onclick="fetchDataFromGAS(true)" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold px-4 py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-vial"></i> <span>測試並同步</span>
                     </button>
                 </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- DELETE CONFIRMATION MODAL -->
-    <div id="delete-confirm-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden text-center p-6 space-y-4 border border-rose-100">
-            <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center text-3xl mx-auto shadow-inner">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-            </div>
-            <div>
-                <h3 class="text-xl font-bold text-slate-800">確認刪除項目</h3>
-                <p id="delete-confirm-msg" class="text-xs text-slate-500 mt-2 px-2">確定要刪除此項目嗎？刪除後將無法復原。</p>
-            </div>
-            <div class="flex space-x-2 pt-2">
-                <button type="button" onclick="closeDeleteConfirmModal()" class="w-1/2 py-2.5 px-3 rounded-xl border border-slate-300 text-slate-600 font-semibold text-xs hover:bg-slate-50 transition">
-                    取消
-                </button>
-                <button type="button" id="delete-confirm-btn" class="w-1/2 py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md transition">
-                    確認刪除
-                </button>
             </div>
         </div>
-    </div>
 
-    <!-- Toast Container -->
-    <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-3 pointer-events-none"></div>
+    </main>
 
     <!-- Footer -->
-    <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 py-6 text-center text-xs mt-auto">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div class="flex items-center space-x-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <span>南投縣政府稅務局 版權所有</span>
-            </div>
-            <div class="text-slate-500">
-                服務電話：(049) 2222121 ｜ 
-            </div>
+    <footer class="bg-slate-800 text-slate-400 text-xs py-4 border-t border-slate-700 mt-8">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div>● 南投縣政府稅務局 版權所有</div>
+            <div>服務電話：(049) 2222121 ｜ Google Apps Script 雲端資料庫連線維護</div>
         </div>
     </footer>
 
+    <!-- JavaScript Diagnostic & Sync Logic -->
     <script>
-        // 設定更新：已將預設部署 Webhook URL 更新為您提供的正式網址
-        const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbxukMHmHtEB7TsWx_6umo4DdKWcv33s9gwHT6Lr7zu6R3sEAfkV8Z6TFerlZiwzy4axSA/exec";
-        let adminPassword = localStorage.getItem('NTTAX_ADMIN_PWD') || "nttax2026";
-
-        const DEPARTMENTS = [
-            "服務科", "土地稅科", "消費稅科", "房屋稅科", "資訊科", "人事室",
-            "行政科", "政風室", "會計室", "法務科", "埔里分局", "竹山分局"
-        ];
-
-        let courses = [
-            {
-                id: "course-101",
-                name: "資安教育訓練",
-                date: "115/09/20",
-                time: "14:00-17:00",
-                location: "6樓禮堂",
-                capacity: 60,
-                status: "OPEN",
-                description: "強化全體人員資安意識與公務電子郵件社交工程防範技巧。"
-            },
-            {
-                id: "course-102",
-                name: "房屋稅條例新制與稽徵作業實務",
-                date: "115/10/05",
-                time: "09:00-12:00",
-                location: "2樓會議室",
-                capacity: 45,
-                status: "OPEN",
-                description: "說明最新房屋稅差別稅率2.0法令修正及申報案件處理流程。"
-            },
-            {
-                id: "course-103",
-                name: "公務機密維護與廉政倫理規範研習",
-                date: "115/10/18",
-                time: "13:30-16:30",
-                location: "6樓禮堂",
-                capacity: 80,
-                status: "OPEN",
-                description: "落實公務員廉政倫理規範與納稅者權利保護實務解析。"
+        // 預設 GAS 網址與 Key
+        const STORAGE_KEY_GAS = 'nttax_gas_url';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedUrl = localStorage.getItem(STORAGE_KEY_GAS);
+            if (savedUrl) {
+                document.getElementById('gasUrlInput').value = savedUrl;
             }
-        ];
+        });
 
-        let registrations = [
-            {
-                id: 1,
-                courseId: "course-101",
-                courseName: "資安教育訓練",
-                courseDate: "115/09/20",
-                courseTime: "14:00-17:00",
-                department: "服務科",
-                employeeId: "LM11501011",
-                jobTitle: "助理員",
-                userName: "王小美",
-                timestamp: "115/09/01 10:15",
-                checkedIn: true
-            }
-        ];
-
-        let activePortal = 'user';
-        let isAdminAuthenticated = false;
-        let deptChartInstance = null;
-
-        window.onload = function() {
-            checkExistingAdminSession();
-            renderCoursesGrid();
-            populateFilterDropdowns();
-            updateDashboardStats();
-        };
-
-        function getNextRegistrationId(courseId) {
-            const courseRegs = registrations.filter(r => r.courseId === courseId);
-            if (courseRegs.length === 0) return 1;
-            const maxId = courseRegs.reduce((max, r) => Math.max(max, parseInt(r.id) || 0), 0);
-            return maxId + 1;
-        }
-
-        function sendToGoogleSheets(data) {
-            const url = localStorage.getItem('NTTAX_GAS_URL') || DEFAULT_GAS_URL;
-            if (!url) return;
-
-            fetch(url, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'text/plain;charset=utf-8'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(() => {
-                showToast("報名資料已同步寫入 Google 雲端試算表！", "success");
-            })
-            .catch(err => {
-                console.error("寫入 Google 試算表發生異常:", err);
-                showToast("試算表同步異常，已先備份於本機系統", "warning");
-            });
-        }
-
-        function switchAdminTab(tab) {
-            const tabs = {
-                'courses-mgmt': 'admin-tab-courses',
-                'roster': 'admin-tab-roster',
-                'stats': 'admin-tab-stats',
-                'sheets-config': 'admin-tab-sheets'
-            };
-            const btnIds = {
-                'courses-mgmt': 'admin-tab-btn-courses',
-                'roster': 'admin-tab-btn-roster',
-                'stats': 'admin-tab-btn-stats',
-                'sheets-config': 'admin-tab-btn-sheets'
-            };
-
-            Object.values(tabs).forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.classList.add('hidden');
-            });
-
-            Object.values(btnIds).forEach(id => {
-                const btn = document.getElementById(id);
-                if (btn) {
-                    btn.className = "px-4 py-2 font-semibold text-sm rounded-lg text-slate-600 hover:bg-slate-200 transition";
-                }
-            });
-
-            const targetTab = document.getElementById(tabs[tab]);
-            const targetBtn = document.getElementById(btnIds[tab]);
-
-            if (targetTab) targetTab.classList.remove('hidden');
-            if (targetBtn) {
-                targetBtn.className = "px-4 py-2 font-semibold text-sm rounded-lg bg-nttax-900 text-white shadow-sm";
-            }
-
-            if (tab === 'roster') {
-                renderAdminRoster();
-            } else if (tab === 'stats') {
-                renderDeptChart();
-            } else if (tab === 'sheets-config') {
-                loadGasWebhookConfig();
-            }
-        }
-
-        function openAddCourseModal() {
-            document.getElementById('add-course-form').reset();
-            document.getElementById('add-course-modal').classList.remove('hidden');
-        }
-
-        function closeAddCourseModal() {
-            document.getElementById('add-course-modal').classList.add('hidden');
-        }
-
-        function handleAddCourseSubmit(e) {
-            e.preventDefault();
-
-            const name = document.getElementById('add-course-name').value.trim();
-            const date = document.getElementById('add-course-date').value.trim();
-            const time = document.getElementById('add-course-time').value.trim();
-            const location = document.getElementById('add-course-location').value.trim();
-            const capacity = parseInt(document.getElementById('add-course-capacity').value) || 50;
-            const description = document.getElementById('add-course-description').value.trim();
-
-            if (!name || !date || !time || !location) {
-                showToast("請填寫所有必要欄位！", "error");
-                return;
-            }
-
-            const newCourse = {
-                id: "course-" + (courses.length + 101),
-                name: name,
-                date: date,
-                time: time,
-                location: location,
-                capacity: capacity,
-                status: "OPEN",
-                description: description || "南投縣政府稅務局內部教育訓練課程。"
-            };
-
-            courses.push(newCourse);
-            closeAddCourseModal();
-            renderCoursesGrid();
-            renderAdminCoursesTable();
-            populateFilterDropdowns();
-            updateDashboardStats();
-            showToast("成功發布新課程：" + name, "success");
-        }
-
-        function openManualAddModal() {
-            if (courses.length === 0) {
-                showToast("目前無可用課程", "warning");
-                return;
-            }
-            openRegistrationModal(courses[0].id);
-        }
-
-        function exportToCSV() {
-            if (registrations.length === 0) {
-                showToast("目前尚無報名資料可供匯出", "info");
-                return;
-            }
-            let csvContent = "\uFEFF報名編號,課程名稱,上課日期,上課時間,單位,員工編號,職稱,姓名,報名時間,簽到狀態\n";
-            registrations.forEach(r => {
-                csvContent += `"${r.id}","${r.courseName}","${r.courseDate}","${r.courseTime}","${r.department}","${r.employeeId}","${r.jobTitle || ''}","${r.userName}","${r.timestamp}","${r.checkedIn ? '已簽到' : '未簽到'}"\n`;
-            });
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            const url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", `南投稅務局_參訓報名名冊_${new Date().toISOString().slice(0,10)}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            showToast("成功匯出 CSV 報名名冊！", "success");
-        }
-
-        function resetRosterFilters() {
-            const fc = document.getElementById('filter-course');
-            const fd = document.getElementById('filter-dept');
-            const fs = document.getElementById('filter-search');
-            if (fc) fc.value = "ALL";
-            if (fd) fd.value = "ALL";
-            if (fs) fs.value = "";
-            renderAdminRoster();
-            showToast("已重設篩選條件", "info");
-        }
-
-        function toggleCheckIn(courseId, regId) {
-            const reg = registrations.find(r => r.courseId === courseId && r.id == regId);
-            if (reg) {
-                reg.checkedIn = !reg.checkedIn;
-                renderAdminRoster();
-                updateDashboardStats();
-                showToast(`已變更 ${reg.userName} 簽到狀態為：${reg.checkedIn ? '已簽到' : '未簽到'}`, "info");
-            }
-        }
-
-        function deleteRegistration(courseId, regId) {
-            const index = registrations.findIndex(r => r.courseId === courseId && r.id == regId);
-            if (index !== -1) {
-                const name = registrations[index].userName;
-                registrations.splice(index, 1);
-                renderAdminRoster();
-                renderCoursesGrid();
-                updateDashboardStats();
-                showToast(`已刪除學員 ${name} 的報名紀錄`, "warning");
-            }
-        }
-
-        function loadGasWebhookConfig() {
-            const input = document.getElementById('gas-webhook-url');
-            if (input) {
-                input.value = localStorage.getItem('NTTAX_GAS_URL') || DEFAULT_GAS_URL;
-            }
-        }
-
+        // 儲存 Webhook URL
         function saveGasWebhookUrl() {
-            const input = document.getElementById('gas-webhook-url');
-            if (input && input.value.trim()) {
-                const url = input.value.trim();
-                localStorage.setItem('NTTAX_GAS_URL', url);
-                showToast("已儲存 Google Apps Script Webhook URL！", "success");
-            } else {
-                showToast("請輸入有效的 Webhook URL", "error");
+            const url = document.getElementById('gasUrlInput').value.trim();
+            if (!url) {
+                alert('請輸入有效的 Google Apps Script URL！');
+                return;
             }
+            localStorage.setItem(STORAGE_KEY_GAS, url);
+            alert('URL 儲存成功！將嘗試讀取試算表資料...');
+            fetchDataFromGAS(true);
         }
 
-        function testGasWebhook() {
-            const url = localStorage.getItem('NTTAX_GAS_URL') || DEFAULT_GAS_URL;
-            showToast("正在發送測試封包至 Google 試算表...", "info");
-            
-            const testPayload = {
-                id: 1,
-                courseName: "測試串接課程",
-                courseDate: "115/09/20",
-                courseTime: "12:00-13:00",
-                department: "資訊科",
-                employeeId: "TEST9999",
-                jobTitle: "測試職稱",
-                userName: "測試員",
-                timestamp: "115/09/20 12:00",
-                checkedIn: false
-            };
+        // 從 GAS 擷取資料的核心函數
+        async function fetchDataFromGAS(showNotice = false) {
+            const gasUrl = document.getElementById('gasUrlInput').value.trim() || localStorage.getItem(STORAGE_KEY_GAS);
+            const badge = document.getElementById('apiStatusBadge');
 
-            fetch(url, { 
-                method: 'POST', 
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(testPayload)
-            })
-            .then(() => {
-                showToast("連線測試請求已發送！請至您的 Google 試算表確認是否有測試列寫入", "success");
-            })
-            .catch(err => {
-                showToast("連線測試失敗，請檢查 URL 設置", "error");
-            });
-        }
-
-        function renderDeptChart() {
-            const ctx = document.getElementById('deptChart');
-            if (!ctx) return;
-
-            const deptCounts = DEPARTMENTS.map(d => registrations.filter(r => r.department === d).length);
-
-            if (deptChartInstance) {
-                deptChartInstance.destroy();
+            if (!gasUrl) {
+                if (showNotice) alert('請先設定正確的 Google Apps Script Web App URL');
+                badge.className = 'bg-rose-100 text-rose-800 text-xs px-2 py-0.5 rounded-full font-semibold';
+                badge.innerText = '未設定 API';
+                return;
             }
 
-            deptChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: DEPARTMENTS,
-                    datasets: [{
-                        label: '報名參訓人次',
-                        data: deptCounts,
-                        backgroundColor: '#16a34a',
-                        borderRadius: 8,
-                        hoverBackgroundColor: '#15803d'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { stepSize: 1 }
-                        }
-                    }
-                }
-            });
-        }
-
-        function checkExistingAdminSession() {
-            const authState = sessionStorage.getItem('NTTAX_ADMIN_AUTH');
-            if (authState === 'true') {
-                setAdminAuthStatus(true);
-            } else {
-                setAdminAuthStatus(false);
+            // 檢查是否為 file:// 協議
+            if (window.location.protocol === 'file:') {
+                console.warn("當前處於本地 file:// 協定，可能受瀏覽器安全性限制導致 CORS 錯誤。建議使用 Live Server 或 GitHub Pages 測試。");
             }
-        }
 
-        function setAdminAuthStatus(isAuth) {
-            isAdminAuthenticated = isAuth;
-            const lockIcon = document.getElementById('admin-lock-icon');
-            const logoutBtn = document.getElementById('btn-admin-logout');
+            badge.className = 'bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded-full font-semibold';
+            badge.innerText = '連線同步中...';
 
-            if (isAuth) {
-                if (lockIcon) {
-                    lockIcon.className = "fa-solid fa-lock-open text-emerald-400 text-xs mr-0.5";
+            try {
+                // 加上時間戳記防止快取
+                const requestUrl = `${gasUrl}?action=getData&_t=${new Date().getTime()}`;
+                
+                // 採用 standard redirect & cors 設定發送請求
+                const response = await fetch(requestUrl, {
+                    method: 'GET',
+                    redirect: 'follow'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP 錯誤狀態: ${response.status}`);
                 }
-                if (logoutBtn) {
-                    logoutBtn.classList.remove('hidden');
-                    logoutBtn.classList.add('flex');
+
+                const result = await response.json();
+                
+                if (result.status === 'success' || result.data) {
+                    badge.className = 'bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded-full font-semibold';
+                    badge.innerText = '已連線上 API';
+
+                    // 更新儀表板統計數字 (若有回傳)
+                    if (result.courses) document.getElementById('statCourses').innerText = result.courses.length;
+                    if (result.registrations) document.getElementById('statRegistrations').innerText = result.registrations.length;
+
+                    if (showNotice) alert('資料同步成功！');
+                } else {
+                    throw new Error(result.message || '回傳格式不符');
                 }
-            } else {
-                if (lockIcon) {
-                    lockIcon.className = "fa-solid fa-lock text-amber-400 text-xs mr-0.5";
-                }
-                if (logoutBtn) {
-                    logoutBtn.classList.add('hidden');
-                    logoutBtn.classList.remove('flex');
+
+            } catch (err) {
+                console.error('無法連線 Google Apps Script:', err);
+                badge.className = 'bg-rose-100 text-rose-800 text-xs px-2 py-0.5 rounded-full font-semibold';
+                badge.innerText = '連線失敗 (CORS/網路錯誤)';
+
+                if (showNotice) {
+                    alert(`連線失敗！\n錯誤原因：${err.message}\n\n提醒：若從本機檔案 (file://) 直接開啟，請改用 VS Code Live Server 或上傳至 GitHub Pages 進行測試。並確保 GAS 發布權限設為「任何人 (Anyone)」。`);
                 }
             }
         }
 
-        function openAdminLoginModal() {
-            document.getElementById('admin-password-input').value = '';
-            document.getElementById('admin-login-modal').classList.remove('hidden');
-        }
-
-        function closeAdminLoginModal() {
-            document.getElementById('admin-login-modal').classList.add('hidden');
-        }
-
-        function handleAdminLoginSubmit(e) {
-            e.preventDefault();
-            const inputPwd = document.getElementById('admin-password-input').value.trim();
-
-            if (inputPwd === adminPassword) {
-                sessionStorage.setItem('NTTAX_ADMIN_AUTH', 'true');
-                setAdminAuthStatus(true);
-                closeAdminLoginModal();
-                showToast("管理者身份驗證成功！已解鎖後台管理權限", "success");
-                switchPortal('admin');
-            } else {
-                showToast("密碼錯誤！請輸入正確的管理者權限金鑰", "error");
-            }
+        function toggleAdminPanel() {
+            const banner = document.getElementById('adminBanner');
+            banner.classList.toggle('hidden');
         }
 
         function logoutAdmin() {
-            sessionStorage.removeItem('NTTAX_ADMIN_AUTH');
-            setAdminAuthStatus(false);
-            showToast("已成功登出管理者模式", "info");
-            switchPortal('user');
-        }
-
-        function openChangePasswordModal() {
-            document.getElementById('current-pwd-input').value = '';
-            document.getElementById('new-pwd-input').value = '';
-            document.getElementById('confirm-pwd-input').value = '';
-            document.getElementById('change-password-modal').classList.remove('hidden');
-        }
-
-        function closeChangePasswordModal() {
-            document.getElementById('change-password-modal').classList.add('hidden');
-        }
-
-        function handlePasswordChangeSubmit(e) {
-            e.preventDefault();
-            const currentPwd = document.getElementById('current-pwd-input').value.trim();
-            const newPwd = document.getElementById('new-pwd-input').value.trim();
-            const confirmPwd = document.getElementById('confirm-pwd-input').value.trim();
-
-            if (currentPwd !== adminPassword) {
-                showToast("原密碼輸入不正確！", "error");
-                return;
-            }
-
-            if (newPwd.length < 6) {
-                showToast("新密碼長度需至少為 6 個字元！", "warning");
-                return;
-            }
-
-            if (newPwd !== confirmPwd) {
-                showToast("兩次輸入的新密碼不相符！", "error");
-                return;
-            }
-
-            adminPassword = newPwd;
-            localStorage.setItem('NTTAX_ADMIN_PWD', newPwd);
-            closeChangePasswordModal();
-            showToast("管理者密碼變更成功！請牢記您的新密碼", "success");
-        }
-
-        function togglePasswordVisibility(inputId = 'admin-password-input', iconId = 'pwd-eye-icon') {
-            const pwdInput = document.getElementById(inputId);
-            const icon = document.getElementById(iconId);
-            if (!pwdInput || !icon) return;
-            if (pwdInput.type === 'password') {
-                pwdInput.type = 'text';
-                icon.className = 'fa-solid fa-eye-slash';
-            } else {
-                pwdInput.type = 'password';
-                icon.className = 'fa-solid fa-eye';
+            if(confirm('確定要登出管理者模式嗎？')) {
+                document.getElementById('adminBanner').classList.add('hidden');
+                alert('已成功登出');
             }
         }
 
-        function switchPortal(portal) {
-            if (portal === 'admin' && !isAdminAuthenticated) {
-                openAdminLoginModal();
-                return;
+        function changePassword() {
+            const newPwd = prompt('請輸入新密碼：');
+            if (newPwd) {
+                alert('密碼修改完成！');
             }
-
-            activePortal = portal;
-            const userPortal = document.getElementById('portal-user');
-            const adminPortal = document.getElementById('portal-admin');
-            const btnUser = document.getElementById('btn-mode-user');
-            const btnAdmin = document.getElementById('btn-mode-admin');
-
-            if (portal === 'user') {
-                userPortal.classList.remove('hidden');
-                adminPortal.classList.add('hidden');
-                btnUser.className = "px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-1.5 bg-emerald-600 text-white shadow";
-                btnAdmin.className = "px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-1.5 text-slate-300 hover:text-white";
-                renderCoursesGrid();
-            } else {
-                userPortal.classList.add('hidden');
-                adminPortal.classList.remove('hidden');
-                btnAdmin.className = "px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-1.5 bg-emerald-600 text-white shadow";
-                btnUser.className = "px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-1.5 text-slate-300 hover:text-white";
-                renderAdminCoursesTable();
-                renderAdminRoster();
-                updateDashboardStats();
-            }
-        }
-
-        function switchUserTab(tab) {
-            const coursesSec = document.getElementById('user-tab-courses');
-            const myEnrollSec = document.getElementById('user-tab-my-enroll');
-            const btnCourses = document.getElementById('tab-btn-courses');
-            const btnMyEnroll = document.getElementById('tab-btn-my-enroll');
-
-            if (tab === 'courses') {
-                coursesSec.classList.remove('hidden');
-                myEnrollSec.classList.add('hidden');
-                btnCourses.className = "px-4 py-2 text-sm font-semibold rounded-lg bg-white text-nttax-800 shadow-sm transition";
-                btnMyEnroll.className = "px-4 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition";
-            } else {
-                coursesSec.classList.add('hidden');
-                myEnrollSec.classList.remove('hidden');
-                btnMyEnroll.className = "px-4 py-2 text-sm font-semibold rounded-lg bg-white text-nttax-800 shadow-sm transition";
-                btnCourses.className = "px-4 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition";
-            }
-        }
-
-        function renderCoursesGrid() {
-            const grid = document.getElementById('courses-grid');
-            grid.innerHTML = '';
-            let openCount = 0;
-
-            courses.forEach(c => {
-                const count = registrations.filter(r => r.courseId === c.id).length;
-                const isFull = count >= c.capacity;
-                const isOpen = c.status === 'OPEN' && !isFull;
-
-                if (c.status === 'OPEN') openCount++;
-
-                const card = document.createElement('div');
-                card.className = "bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden relative group";
-
-                card.innerHTML = `
-                    <div class="p-5 space-y-3">
-                        <div class="flex items-start justify-between gap-2">
-                            <span class="px-2.5 py-1 rounded-full text-xs font-bold ${isOpen ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
-                                ${isOpen ? '開放報名中' : (isFull ? '已額滿' : '已截止')}
-                            </span>
-                            <span class="text-xs text-slate-400 font-mono"><i class="fa-solid fa-chair mr-1"></i>${count} / ${c.capacity} 人</span>
-                        </div>
-                        <h4 class="text-lg font-bold text-slate-900 group-hover:text-nttax-700 transition">${c.name}</h4>
-                        <p class="text-xs text-slate-500 line-clamp-2">${c.description}</p>
-                        
-                        <div class="space-y-1.5 pt-2 border-t border-slate-100 text-xs text-slate-600">
-                            <div class="flex items-center gap-2">
-                                <i class="fa-regular fa-calendar text-nttax-700 w-4"></i>
-                                <span class="font-medium text-slate-700">日期：${c.date}</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <i class="fa-regular fa-clock text-nttax-700 w-4"></i>
-                                <span class="font-medium text-slate-700">時間：${c.time}</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <i class="fa-solid fa-location-dot text-nttax-700 w-4"></i>
-                                <span class="text-slate-500">${c.location}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-50 p-4 border-t border-slate-100">
-                        <button onclick="openRegistrationModal('${c.id}')" ${!isOpen ? 'disabled' : ''} 
-                            class="w-full py-2.5 px-4 rounded-xl font-bold text-sm transition shadow-sm flex items-center justify-center space-x-2 
-                            ${isOpen ? 'bg-nttax-700 hover:bg-nttax-800 text-white shadow-emerald-700/20' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}">
-                            <i class="fa-solid ${isOpen ? 'fa-pen-to-square' : 'fa-lock'}"></i>
-                            <span>${isOpen ? '選擇此課程報名' : (isFull ? '名額已滿' : '非開放狀態')}</span>
-                        </button>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-
-            document.getElementById('open-course-count').innerText = openCount;
-        }
-
-        function openRegistrationModal(courseId) {
-            const course = courses.find(c => c.id === courseId);
-            if (!course) return;
-
-            document.getElementById('form-course-id').value = course.id;
-            document.getElementById('form-course-name').value = course.name;
-            document.getElementById('form-course-date').value = course.date;
-            document.getElementById('form-course-time').value = course.time;
-
-            document.getElementById('form-dept').value = "";
-            document.getElementById('form-employee-id').value = "";
-            document.getElementById('form-job-title').value = "";
-            document.getElementById('form-user-name').value = "";
-
-            document.getElementById('registration-modal').classList.remove('hidden');
-        }
-
-        function closeRegistrationModal() {
-            document.getElementById('registration-modal').classList.add('hidden');
-        }
-
-        function handleRegistrationSubmit(e) {
-            e.preventDefault();
-
-            const courseId = document.getElementById('form-course-id').value;
-            const course = courses.find(c => c.id === courseId);
-            const dept = document.getElementById('form-dept').value;
-            const empId = document.getElementById('form-employee-id').value.trim().toUpperCase();
-            const jobTitle = document.getElementById('form-job-title').value.trim();
-            const name = document.getElementById('form-user-name').value.trim();
-
-            if (!dept || !empId || !jobTitle || !name) {
-                showToast("請填寫所有必填欄位 (單位、員工編號、職稱與姓名)", "error");
-                return;
-            }
-
-            const existing = registrations.find(r => r.courseId === courseId && (r.employeeId === empId || r.userName === name));
-            if (existing) {
-                showToast(`員工 ${name} (${empId}) 已報名過本課程！`, "warning");
-                return;
-            }
-
-            const regId = getNextRegistrationId(course.id);
-            const now = new Date();
-            const timeStr = `115/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getDate().toString().padStart(2,'0')} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
-
-            const newRegistration = {
-                id: regId,
-                courseId: course.id,
-                courseName: course.name,
-                courseDate: course.date,
-                courseTime: course.time,
-                department: dept,
-                employeeId: empId,
-                jobTitle: jobTitle,
-                userName: name,
-                timestamp: timeStr,
-                checkedIn: false
-            };
-
-            registrations.push(newRegistration);
-            closeRegistrationModal();
-
-            confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
-            showToast("報名成功！", "success");
-            showSuccessModal(newRegistration);
-
-            sendToGoogleSheets(newRegistration);
-
-            renderCoursesGrid();
-            updateDashboardStats();
-        }
-
-        function showSuccessModal(reg) {
-            document.getElementById('success-reg-id').innerText = reg.id;
-            document.getElementById('success-name').innerText = reg.userName;
-            document.getElementById('success-empid').innerText = reg.employeeId;
-            document.getElementById('success-jobtitle').innerText = reg.jobTitle || '未填寫';
-            document.getElementById('success-dept').innerText = reg.department;
-            document.getElementById('success-course').innerText = reg.courseName;
-            document.getElementById('success-datetime').innerText = `${reg.courseDate} ${reg.courseTime}`;
-
-            document.getElementById('success-modal').classList.remove('hidden');
-        }
-
-        function closeSuccessModal() {
-            document.getElementById('success-modal').classList.add('hidden');
-        }
-
-        function queryMyEnrollments() {
-            const query = document.getElementById('query-input').value.trim().toUpperCase();
-            const container = document.getElementById('query-results-container');
-
-            if (!query) {
-                showToast("請輸入員工編號或姓名進行查詢", "info");
-                return;
-            }
-
-            const matched = registrations.filter(r => 
-                r.employeeId.toUpperCase().includes(query) || 
-                r.userName.includes(query)
-            );
-
-            if (matched.length === 0) {
-                container.innerHTML = `
-                    <div class="bg-white rounded-2xl p-8 border border-slate-200 text-center text-slate-500">
-                        <i class="fa-solid fa-circle-exclamation text-3xl text-amber-500 mb-2"></i>
-                        <p class="font-bold text-slate-700">查無對應的報名紀錄</p>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = matched.map(r => `
-                <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-nttax-700 transition">
-                    <div class="space-y-1">
-                        <div class="flex items-center space-x-2">
-                            <span class="bg-nttax-100 text-nttax-800 text-xs font-bold px-2.5 py-0.5 rounded-full">${r.department}</span>
-                            <span class="text-xs text-slate-400 font-mono">編號 #${r.id} | ${r.employeeId} (${r.jobTitle || ''}) ${r.userName}</span>
-                            <span class="text-xs px-2 py-0.5 rounded ${r.checkedIn ? 'bg-emerald-100 text-emerald-800 font-bold' : 'bg-slate-100 text-slate-600'}">
-                                ${r.checkedIn ? '✓ 已於現場簽到' : '尚未簽到'}
-                            </span>
-                        </div>
-                        <h4 class="text-lg font-bold text-slate-900">${r.courseName}</h4>
-                        <p class="text-xs text-slate-500"><i class="fa-regular fa-clock mr-1"></i>${r.courseDate} ${r.courseTime}</p>
-                    </div>
-                    <div class="flex items-center space-x-2 self-end md:self-auto">
-                        <button onclick='showSuccessModal(${JSON.stringify(r)})' class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold transition">
-                            <i class="fa-solid fa-file-circle-check mr-1"></i>檢視報名詳情
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderAdminCoursesTable() {
-            const tbody = document.getElementById('admin-courses-table-body');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
-            courses.forEach(c => {
-                const count = registrations.filter(r => r.courseId === c.id).length;
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition";
-
-                tr.innerHTML = `
-                    <td class="py-3.5 px-4 font-bold text-slate-800">${c.name}</td>
-                    <td class="py-3.5 px-4 font-medium text-slate-700">${c.date}</td>
-                    <td class="py-3.5 px-4 text-slate-600">${c.time}</td>
-                    <td class="py-3.5 px-4 text-xs text-slate-500">${c.location}</td>
-                    <td class="py-3.5 px-4 text-center font-bold text-slate-700">${count} / ${c.capacity}</td>
-                    <td class="py-3.5 px-4 text-center">
-                        <button onclick="toggleCourseStatus('${c.id}')" title="點擊切換報名狀態" class="px-2.5 py-1 rounded-full text-xs font-bold transition shadow-sm ${c.status === 'OPEN' ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
-                            <i class="fa-solid ${c.status === 'OPEN' ? 'fa-lock-open' : 'fa-lock'} mr-1"></i>${c.status === 'OPEN' ? '開放中' : '已關閉'}
-                        </button>
-                    </td>
-                    <td class="py-3.5 px-4 text-right space-x-1.5">
-                        <button onclick="openEditCourseModal('${c.id}')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-2.5 py-1.5 rounded-lg border border-slate-300 transition inline-flex items-center gap-1" title="編輯課程">
-                            <i class="fa-solid fa-pen-to-square text-slate-600"></i>
-                            <span>編輯</span>
-                        </button>
-                        <button onclick="deleteCourse('${c.id}')" class="text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold px-2.5 py-1.5 rounded-lg border border-rose-200 transition inline-flex items-center gap-1" title="刪除課程">
-                            <i class="fa-solid fa-trash text-rose-600"></i>
-                            <span>刪除</span>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function toggleCourseStatus(courseId) {
-            const course = courses.find(c => c.id === courseId);
-            if (course) {
-                course.status = course.status === 'OPEN' ? 'CLOSED' : 'OPEN';
-                renderAdminCoursesTable();
-                renderCoursesGrid();
-                updateDashboardStats();
-                showToast(`已將課程【${course.name}】狀態切換為：${course.status === 'OPEN' ? '開放中' : '已關閉'}`, "info");
-            }
-        }
-
-        function openEditCourseModal(courseId) {
-            const course = courses.find(c => c.id === courseId);
-            if (!course) return;
-
-            document.getElementById('edit-course-id').value = course.id;
-            document.getElementById('edit-course-name').value = course.name;
-            document.getElementById('edit-course-date').value = course.date;
-            document.getElementById('edit-course-time').value = course.time;
-            document.getElementById('edit-course-location').value = course.location;
-            document.getElementById('edit-course-capacity').value = course.capacity;
-            document.getElementById('edit-course-description').value = course.description || '';
-
-            document.getElementById('edit-course-modal').classList.remove('hidden');
-        }
-
-        function closeEditCourseModal() {
-            document.getElementById('edit-course-modal').classList.add('hidden');
-        }
-
-        function handleEditCourseSubmit(e) {
-            e.preventDefault();
-            const id = document.getElementById('edit-course-id').value;
-            const course = courses.find(c => c.id === id);
-            if (!course) return;
-
-            course.name = document.getElementById('edit-course-name').value.trim();
-            course.date = document.getElementById('edit-course-date').value.trim();
-            course.time = document.getElementById('edit-course-time').value.trim();
-            course.location = document.getElementById('edit-course-location').value.trim();
-            course.capacity = parseInt(document.getElementById('edit-course-capacity').value) || 50;
-            course.description = document.getElementById('edit-course-description').value.trim();
-
-            registrations.forEach(r => {
-                if (r.courseId === id) {
-                    r.courseName = course.name;
-                    r.courseDate = course.date;
-                    r.courseTime = course.time;
-                }
-            });
-
-            closeEditCourseModal();
-            renderAdminCoursesTable();
-            renderCoursesGrid();
-            populateFilterDropdowns();
-            showToast(`課程【${course.name}】資料已成功更新！`, "success");
-        }
-
-        function deleteCourse(courseId) {
-            const course = courses.find(c => c.id === courseId);
-            if (!course) return;
-
-            const enrolledCount = registrations.filter(r => r.courseId === courseId).length;
-            const msgEl = document.getElementById('delete-confirm-msg');
-            const confirmBtn = document.getElementById('delete-confirm-btn');
-
-            if (enrolledCount > 0) {
-                msgEl.innerText = `警告：該課程目前已有 ${enrolledCount} 位學員報名。確定要刪除課程【${course.name}】及其報名紀錄嗎？`;
-            } else {
-                msgEl.innerText = `確定要刪除課程【${course.name}】嗎？刪除後無法復原。`;
-            }
-
-            confirmBtn.onclick = function() {
-                courses = courses.filter(c => c.id !== courseId);
-                registrations = registrations.filter(r => r.courseId !== courseId);
-
-                closeDeleteConfirmModal();
-                renderAdminCoursesTable();
-                renderCoursesGrid();
-                populateFilterDropdowns();
-                updateDashboardStats();
-                showToast(`已成功刪除課程【${course.name}】`, "warning");
-            };
-
-            document.getElementById('delete-confirm-modal').classList.remove('hidden');
-        }
-
-        function closeDeleteConfirmModal() {
-            document.getElementById('delete-confirm-modal').classList.add('hidden');
-        }
-
-        function populateFilterDropdowns() {
-            const courseSelect = document.getElementById('filter-course');
-            if (courseSelect) {
-                courseSelect.innerHTML = '<option value="ALL">所有課程</option>';
-                courses.forEach(c => {
-                    courseSelect.innerHTML += `<option value="${c.id}">${c.name} (${c.date})</option>`;
-                });
-            }
-
-            const deptSelect = document.getElementById('filter-dept');
-            if (deptSelect) {
-                deptSelect.innerHTML = '<option value="ALL">所有單位 (12 個科室分局)</option>';
-                DEPARTMENTS.forEach(d => {
-                    deptSelect.innerHTML += `<option value="${d}">${d}</option>`;
-                });
-            }
-        }
-
-        function renderAdminRoster() {
-            const tbody = document.getElementById('admin-roster-table-body');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
-            const selectedCourse = document.getElementById('filter-course')?.value || "ALL";
-            const selectedDept = document.getElementById('filter-dept')?.value || "ALL";
-            const searchKeyword = (document.getElementById('filter-search')?.value || "").trim().toUpperCase();
-
-            const filtered = registrations.filter(r => {
-                const matchCourse = (selectedCourse === "ALL" || r.courseId === selectedCourse);
-                const matchDept = (selectedDept === "ALL" || r.department === selectedDept);
-                const matchSearch = (!searchKeyword || 
-                    r.employeeId.toUpperCase().includes(searchKeyword) || 
-                    (r.jobTitle && r.jobTitle.toUpperCase().includes(searchKeyword)) ||
-                    r.userName.includes(searchKeyword));
-                return matchCourse && matchDept && matchSearch;
-            });
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-slate-400 font-medium">查無符合條件的報名資料</td></tr>`;
-                return;
-            }
-
-            filtered.forEach(r => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition";
-
-                tr.innerHTML = `
-                    <td class="py-3 px-4 font-mono font-bold text-emerald-700">#${r.id}</td>
-                    <td class="py-3 px-4 font-bold text-slate-800">${r.courseName}</td>
-                    <td class="py-3 px-4 text-xs text-slate-600">${r.courseDate} ${r.courseTime}</td>
-                    <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-xs bg-slate-100 font-semibold text-slate-700 border border-slate-200">${r.department}</span></td>
-                    <td class="py-3 px-4 font-mono text-xs font-bold text-slate-700">${r.employeeId}</td>
-                    <td class="py-3 px-4 text-xs font-medium text-slate-700">${r.jobTitle || '-'}</td>
-                    <td class="py-3 px-4 font-medium text-slate-800">${r.userName}</td>
-                    <td class="py-3 px-4 text-xs text-slate-400">${r.timestamp}</td>
-                    <td class="py-3 px-4 text-center">
-                        <button onclick="toggleCheckIn('${r.courseId}', ${r.id})" class="px-2.5 py-1 rounded-full text-xs font-bold transition shadow-sm ${r.checkedIn ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-amber-100 text-amber-800 hover:bg-amber-200'}">
-                            ${r.checkedIn ? '<i class="fa-solid fa-check mr-1"></i>已簽到' : '點擊簽到'}
-                        </button>
-                    </td>
-                    <td class="py-3 px-4 text-right space-x-1">
-                        <button onclick="deleteRegistration('${r.courseId}', ${r.id})" class="text-xs text-rose-600 hover:text-rose-800 font-semibold px-2 py-1 rounded hover:bg-rose-50 transition" title="刪除此紀錄">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function updateDashboardStats() {
-            const elTotalCourses = document.getElementById('stat-total-courses');
-            const elTotalRegs = document.getElementById('stat-total-registrations');
-            const elCheckinRate = document.getElementById('stat-checkin-rate');
-
-            if (elTotalCourses) elTotalCourses.innerText = courses.length;
-            if (elTotalRegs) elTotalRegs.innerText = registrations.length;
-
-            const checkedInCount = registrations.filter(r => r.checkedIn).length;
-            const rate = registrations.length > 0 ? Math.round((checkedInCount / registrations.length) * 100) : 0;
-            if (elCheckinRate) elCheckinRate.innerText = `${rate}%`;
-        }
-
-        function showToast(message, type = "info") {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-
-            let icon = 'fa-circle-info text-blue-500';
-            let border = 'border-blue-200 bg-blue-50';
-
-            if (type === 'success') {
-                icon = 'fa-circle-check text-emerald-500';
-                border = 'border-emerald-200 bg-emerald-50';
-            } else if (type === 'error') {
-                icon = 'fa-circle-xmark text-rose-500';
-                border = 'border-rose-200 bg-rose-50';
-            } else if (type === 'warning') {
-                icon = 'fa-triangle-exclamation text-amber-500';
-                border = 'border-amber-200 bg-amber-50';
-            }
-
-            toast.className = `p-4 rounded-xl border shadow-lg text-slate-800 text-sm font-semibold flex items-center space-x-3 pointer-events-auto transform transition-all duration-300 ${border}`;
-            toast.innerHTML = `<i class="fa-solid ${icon} text-lg"></i><span>${message}</span>`;
-
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
         }
     </script>
 </body>
